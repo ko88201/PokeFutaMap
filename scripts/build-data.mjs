@@ -11,8 +11,6 @@ const execFileAsync = promisify(execFile)
 const PUBLIC_DATA_DIR = new URL('../public/data/', import.meta.url)
 const CACHE_DIR = new URL('../.cache/', import.meta.url)
 const TOOL_CACHE_DIR = new URL('../.cache/tools/', import.meta.url)
-const POKELID_ENDPOINT = 'https://local.pokemon.jp/en/manhole/new/'
-
 await mkdir(PUBLIC_DATA_DIR, { recursive: true })
 await mkdir(CACHE_DIR, { recursive: true })
 await mkdir(TOOL_CACHE_DIR, { recursive: true })
@@ -43,6 +41,15 @@ async function syncPokeLids() {
     }
   }
 
+  const japaneseTitles = new Map(
+    await Promise.all(
+      [...uniqueItems.keys()].map(async (manholeNo) => [
+        manholeNo,
+        await fetchJapaneseLidTitle(manholeNo),
+      ]),
+    ),
+  )
+
   const lids = [...uniqueItems.values()]
     .map((item) => ({
       area: item.area || '',
@@ -52,19 +59,39 @@ async function syncPokeLids() {
       lat: Number(item.lat),
       lng: Number(item.lng),
       manholeNo: String(item.manhole_no),
-      name: item.name || `Poké Lid ${item.manhole_no}`,
+      name:
+        japaneseTitles.get(String(item.manhole_no)) ||
+        item.name ||
+        `ポケふた ${item.manhole_no}`,
       pokemon: item.pokemon_list.map((pokemon) => pokemon.name),
       prefName: item.pref_name,
       prefSlug: item.pref_en_name,
       publishStartDate: item.publish_start_date ?? '',
       searchKeywords: item.search_keyword ?? '',
-      sourceUrl: `https://local.pokemon.jp/en/manhole/desc/${item.manhole_no}/`,
+      sourceUrl: `https://local.pokemon.jp/manhole/desc/${item.manhole_no}/`,
     }))
     .filter((lid) => Number.isFinite(lid.lat) && Number.isFinite(lid.lng))
     .sort((left, right) => Number(left.manholeNo) - Number(right.manholeNo))
 
   await writeJson('pokelids.json', lids)
   return lids
+}
+
+async function fetchJapaneseLidTitle(manholeNo) {
+  try {
+    const response = await fetch(
+      `https://local.pokemon.jp/manhole/desc/${manholeNo}/?is_modal=1`,
+    )
+    if (!response.ok) {
+      return ''
+    }
+
+    const html = await response.text()
+    const headingMatch = html.match(/<h1>([^<]+)<\/h1>/)
+    return headingMatch?.[1]?.trim() ?? ''
+  } catch {
+    return ''
+  }
 }
 
 async function syncTransit(pokelids) {

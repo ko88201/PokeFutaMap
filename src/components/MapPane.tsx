@@ -256,7 +256,7 @@ export function MapPane({
           <div>
             <strong>${lid.name}</strong>
             <p>${lid.prefName}</p>
-            <a href="${buildGoogleMapsLink(lid.lat, lid.lng)}" target="_blank" rel="noreferrer">Open in Google Maps</a>
+            <a href="${buildGoogleMapsLink(lid.lat, lid.lng)}" target="_blank" rel="noreferrer">Googleマップで開く</a>
           </div>
         </article>
       `)

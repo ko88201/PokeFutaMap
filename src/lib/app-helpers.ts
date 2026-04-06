@@ -64,23 +64,23 @@ export function updateLocationSearch(params: URLSearchParams) {
 export function areaLabel(area: string) {
   switch (area) {
     case 'hokkaido':
-      return 'Hokkaido'
+      return '北海道'
     case 'tohoku':
-      return 'Tohoku'
+      return '東北'
     case 'kanto':
-      return 'Kanto'
+      return '関東'
     case 'chubu':
-      return 'Chubu'
+      return '中部'
     case 'kinki':
-      return 'Kinki'
+      return '近畿'
     case 'chugoku':
-      return 'Chugoku'
+      return '中国'
     case 'shikoku':
-      return 'Shikoku'
+      return '四国'
     case 'kyushu':
-      return 'Kyushu'
+      return '九州'
     case 'okinawa':
-      return 'Okinawa'
+      return '沖縄'
     default:
       return area
   }
@@ -89,15 +89,15 @@ export function areaLabel(area: string) {
 export function getLayerLabel(layer: LayerKey) {
   switch (layer) {
     case 'pokeLids':
-      return 'Poké Lids'
+      return 'ポケふた'
     case 'railRoutes':
-      return 'Rail routes'
+      return '鉄道路線'
     case 'trainStations':
-      return 'Train stations'
+      return '駅'
     case 'busStops':
-      return 'Bus stops'
+      return 'バス停'
     case 'busStations':
-      return 'Bus stations'
+      return 'バスターミナル'
   }
 }
 
@@ -138,10 +138,10 @@ export function haversineKilometers(
 
 export function formatDistance(distanceKm: number) {
   if (distanceKm < 1) {
-    return `${Math.round(distanceKm * 1000)} m`
+    return `${Math.round(distanceKm * 1000)}m`
   }
 
-  return `${distanceKm.toFixed(1)} km`
+  return `${distanceKm.toFixed(1)}km`
 }
 
 export function classNames(...parts: Array<string | false | null | undefined>) {

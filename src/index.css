@@ -54,16 +54,6 @@ a {
   min-height: 100vh;
   padding: 28px;
 }
-
-.hero-shell {
-  display: grid;
-  grid-template-columns: minmax(0, 1.8fr) minmax(280px, 0.9fr);
-  gap: 24px;
-  margin-bottom: 24px;
-}
-
-.hero-copy,
-.hero-stats,
 .panel,
 .loading-view {
   background: var(--panel);
@@ -73,18 +63,12 @@ a {
   box-shadow: var(--shadow);
 }
 
-.hero-copy {
-  padding: 32px;
-}
-
-.hero-copy h1,
 .loading-view h1 {
   margin: 0;
   font: 400 clamp(2.6rem, 5vw, 4.6rem) / 0.98 var(--serif);
   letter-spacing: -0.06em;
 }
 
-.hero-text,
 .loading-view p {
   max-width: 58ch;
   margin-top: 16px;
@@ -107,20 +91,7 @@ a {
   padding: 22px;
 }
 
-.hero-stats article {
-  padding: 18px 18px 16px;
-  background: var(--panel-strong);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(93, 104, 111, 0.09);
-}
-
-.hero-stats strong {
-  display: block;
-  font-size: 1.9rem;
-  font-weight: 700;
-}
-
-.hero-stats span,
+.panel-heading p,
 .panel-heading p,
 .detail-meta,
 .summary-card span,
@@ -413,7 +384,6 @@ a {
 
 @media (max-width: 1100px) {
   .workspace,
-  .hero-shell,
   .field-grid,
   .summary-grid,
   .detail-grid {

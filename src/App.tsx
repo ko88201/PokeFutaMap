@@ -86,11 +86,8 @@ function App() {
       <main className="app-shell">
         <section className="loading-view">
           <p className="eyebrow">PokeFutaMap</p>
-          <h1>Loading Poké Lids and transit layers…</h1>
-          <p>
-            Preparing the build-time dataset, map style, and transport overlays for
-            Japan.
-          </p>
+          <h1>ポケふたデータを読み込み中…</h1>
+          <p>地図と交通レイヤーを準備しています。</p>
         </section>
       </main>
     )
@@ -101,7 +98,7 @@ function App() {
       <main className="app-shell">
         <section className="loading-view">
           <p className="eyebrow">PokeFutaMap</p>
-          <h1>Data load failed</h1>
+          <h1>データの読み込みに失敗しました</h1>
           <p>{dataState.message}</p>
         </section>
       </main>
@@ -137,45 +134,20 @@ function App() {
 
   return (
     <main className="app-shell">
-      <section className="hero-shell">
-        <div className="hero-copy">
-          <p className="eyebrow">PokeFutaMap</p>
-          <h1>Find every Poké Lid and the transit around it.</h1>
-          <p className="hero-text">
-            A split-view explorer for Japan&apos;s Poké Lids with build-time synced
-            coordinates, Apple-like cartography, and railway plus bus overlays.
-          </p>
-        </div>
-        <div className="hero-stats">
-          <article>
-            <strong>{readyData.lids.length}</strong>
-            <span>Poké Lids synced</span>
-          </article>
-          <article>
-            <strong>{readyData.transit.stats.totalTransitPoints.toLocaleString()}</strong>
-            <span>Transit points indexed</span>
-          </article>
-          <article>
-            <strong>{readyData.transit.stats.totalRailRoutes.toLocaleString()}</strong>
-            <span>Rail corridors layered</span>
-          </article>
-        </div>
-      </section>
-
       <section className="toolbar mobile-only">
         <button
           className={classNames('pill-toggle', mobilePane === 'list' && 'active')}
           onClick={() => setMobilePane('list')}
           type="button"
         >
-          List
+          一覧
         </button>
         <button
           className={classNames('pill-toggle', mobilePane === 'map' && 'active')}
           onClick={() => setMobilePane('map')}
           type="button"
         >
-          Map
+          地図
         </button>
       </section>
 
@@ -185,12 +157,14 @@ function App() {
         >
           <section className="panel filter-panel">
             <div className="panel-heading">
-              <h2>Explore</h2>
-              <p>{visibleLids.length} lids match the current view.</p>
+              <h2>ポケふたを探す</h2>
+              <p>
+                {visibleLids.length}件表示中 / 全{readyData.lids.length}件
+              </p>
             </div>
 
             <label className="field">
-              <span>Search</span>
+              <span>検索</span>
               <input
                 onChange={(event) => {
                   const nextValue = event.target.value
@@ -198,7 +172,7 @@ function App() {
                     setQuery((current) => ({ ...current, q: nextValue }))
                   })
                 }}
-                placeholder="Search by city or Pokémon"
+                placeholder="地名やポケモン名で検索"
                 type="search"
                 value={query.q}
               />
@@ -206,14 +180,14 @@ function App() {
 
             <div className="field-grid">
               <label className="field">
-                <span>Prefecture</span>
+                <span>都道府県</span>
                 <select
                   onChange={(event) => {
                     setQuery((current) => ({ ...current, pref: event.target.value }))
                   }}
                   value={query.pref}
                 >
-                  <option value="">All prefectures</option>
+                  <option value="">すべての都道府県</option>
                   {allPrefectures.map((prefecture) => (
                     <option key={prefecture} value={prefecture}>
                       {prefecture}
@@ -223,14 +197,14 @@ function App() {
               </label>
 
               <label className="field">
-                <span>Area</span>
+                <span>エリア</span>
                 <select
                   onChange={(event) => {
                     setQuery((current) => ({ ...current, area: event.target.value }))
                   }}
                   value={query.area}
                 >
-                  <option value="">All areas</option>
+                  <option value="">すべてのエリア</option>
                   {areaOptions.map(
                     (area) => (
                       <option key={area} value={area}>
@@ -244,7 +218,7 @@ function App() {
 
             <div className="field-grid">
               <label className="field">
-                <span>Pokémon</span>
+                <span>ポケモン</span>
                 <select
                   onChange={(event) => {
                     setQuery((current) => ({
@@ -254,7 +228,7 @@ function App() {
                   }}
                   value={query.pokemon}
                 >
-                  <option value="">All Pokémon</option>
+                  <option value="">すべてのポケモン</option>
                   {allPokemon.map((pokemon) => (
                     <option key={pokemon} value={pokemon}>
                       {pokemon}
@@ -274,12 +248,12 @@ function App() {
                   }}
                   type="checkbox"
                 />
-                <span>Only newly published lids</span>
+                <span>新着のみ表示</span>
               </label>
             </div>
 
             <div className="layer-group">
-              <p>Map layers</p>
+              <p>表示レイヤー</p>
               <div className="layer-options">
                 {(Object.keys(DEFAULT_LAYERS) as LayerKey[]).map((layer) => (
                   <label className="checkbox-chip" key={layer}>
@@ -305,8 +279,8 @@ function App() {
 
           <section className="panel results-panel">
             <div className="panel-heading">
-              <h2>Poké Lid list</h2>
-              <p>Tap a card to focus the map and transit summary.</p>
+              <h2>ポケふた一覧</h2>
+              <p>カードを押すと地図と詳細が連動します。</p>
             </div>
             <div className="card-list">
               {visibleLids.map((lid) => {
@@ -326,7 +300,7 @@ function App() {
                     <div className="lid-copy">
                       <div className="lid-title-row">
                         <strong>{lid.name}</strong>
-                        {lid.isNew ? <span className="badge">New</span> : null}
+                        {lid.isNew ? <span className="badge">新着</span> : null}
                       </div>
                       <span>
                         {lid.prefName} · {areaLabel(lid.area)}
@@ -338,8 +312,8 @@ function App() {
               })}
               {visibleLids.length === 0 ? (
                 <div className="empty-state">
-                  <strong>No lids match this filter set.</strong>
-                  <p>Try clearing the search, Pokémon, or prefecture filters.</p>
+                  <strong>条件に合うポケふたが見つかりません。</strong>
+                  <p>検索語や絞り込み条件を少し減らしてみてください。</p>
                 </div>
               ) : null}
             </div>
@@ -351,8 +325,8 @@ function App() {
         >
           <section className="panel map-panel">
             <div className="panel-heading">
-              <h2>Map view</h2>
-              <p>Poké Lids stay prominent while transit layers remain low-contrast.</p>
+              <h2>地図</h2>
+              <p>ポケふたを主役にしつつ、交通情報を重ねて見られます。</p>
             </div>
             <MapPane
               activeId={activeLid?.manholeNo ?? null}
@@ -365,8 +339,8 @@ function App() {
 
           <section className="panel detail-panel">
             <div className="panel-heading">
-              <h2>Selected lid</h2>
-              <p>Nearest transit and rail corridors update from the indexed overlays.</p>
+              <h2>選択中のポケふた</h2>
+              <p>近くの駅やバス停、周辺路線を確認できます。</p>
             </div>
             {activeLid ? (
               <div className="detail-grid">
@@ -374,30 +348,30 @@ function App() {
                 <div className="detail-copy">
                   <div className="detail-title">
                     <h3>{activeLid.name}</h3>
-                    {activeLid.isNew ? <span className="badge">New</span> : null}
+                    {activeLid.isNew ? <span className="badge">新着</span> : null}
                   </div>
                   <p className="detail-meta">
-                    {activeLid.prefName} · {areaLabel(activeLid.area)} · Poké Lid #
+                    {activeLid.prefName} · {areaLabel(activeLid.area)} · ポケふた #
                     {activeLid.manholeNo}
                   </p>
                   <p className="detail-pokemon">{activeLid.pokemon.join(' · ')}</p>
                   <div className="detail-links">
                     <a href={activeLid.sourceUrl} rel="noreferrer" target="_blank">
-                      Official page
+                      公式ページ
                     </a>
                     <a
                       href={buildGoogleMapsLink(activeLid.lat, activeLid.lng)}
                       rel="noreferrer"
                       target="_blank"
                     >
-                      Open in Google Maps
+                      Googleマップで開く
                     </a>
                   </div>
                 </div>
                 {activeSummary ? (
                   <div className="summary-grid">
                     <SummaryCard
-                      label="Nearest train station"
+                      label="最寄り駅"
                       secondary={
                         activeSummary.nearestTrain
                           ? `${formatDistance(
@@ -407,13 +381,13 @@ function App() {
                                 activeSummary.nearestTrain.lat,
                                 activeSummary.nearestTrain.lng,
                               ),
-                            )} away`
-                          : 'No nearby station found in dataset'
+                            )}`
+                          : '近くの駅データが見つかりません'
                       }
-                      value={activeSummary.nearestTrain?.name ?? 'Not indexed'}
+                      value={activeSummary.nearestTrain?.name ?? '未収録'}
                     />
                     <SummaryCard
-                      label="Nearest bus stop"
+                      label="最寄りバス停"
                       secondary={
                         activeSummary.nearestBus
                           ? `${formatDistance(
@@ -423,21 +397,21 @@ function App() {
                                 activeSummary.nearestBus.lat,
                                 activeSummary.nearestBus.lng,
                               ),
-                            )} away`
-                          : 'No nearby bus stop found in dataset'
+                            )}`
+                          : '近くのバス停データが見つかりません'
                       }
-                      value={activeSummary.nearestBus?.name ?? 'Not indexed'}
+                      value={activeSummary.nearestBus?.name ?? '未収録'}
                     />
                     <SummaryCard
-                      label="Rail routes nearby"
-                      secondary="Within 10 km of the selected lid"
+                      label="周辺の鉄道路線"
+                      secondary="選択地点から10km圏内"
                       value={
                         activeSummary.nearbyRoutes.length > 0
                           ? activeSummary.nearbyRoutes
                               .slice(0, 3)
                               .map((route) => route.routeName || route.routeRef || route.name)
                               .join(' · ')
-                          : 'No named route nearby'
+                          : '周辺に路線データなし'
                       }
                     />
                   </div>
@@ -445,8 +419,8 @@ function App() {
               </div>
             ) : (
               <div className="empty-state">
-                <strong>Select a Poké Lid to inspect transit around it.</strong>
-                <p>The map and list stay linked, so either interaction path works.</p>
+                <strong>ポケふたを選ぶと詳細と交通情報を表示します。</strong>
+                <p>一覧でも地図でも、どちらからでも選択できます。</p>
               </div>
             )}
           </section>
