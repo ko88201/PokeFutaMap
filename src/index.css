@@ -85,17 +85,8 @@ a {
   font-weight: 700;
 }
 
-.hero-stats {
-  display: grid;
-  gap: 14px;
-  padding: 22px;
-}
-
-.panel-heading p,
 .panel-heading p,
 .detail-meta,
-.summary-card span,
-.summary-card p,
 .lid-copy span,
 .empty-state p {
   color: var(--muted);
@@ -168,8 +159,7 @@ a {
   margin-bottom: 14px;
 }
 
-.field span,
-.layer-group p {
+.field span {
   font-size: 0.86rem;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -194,22 +184,6 @@ a {
   min-height: 100%;
   padding: 30px 0 0;
   color: var(--muted);
-}
-
-.layer-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.checkbox-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(76, 99, 101, 0.14);
-  background: rgba(255, 255, 255, 0.82);
 }
 
 .card-list {
@@ -351,26 +325,6 @@ a {
   text-decoration: none;
 }
 
-.summary-grid {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.summary-card {
-  padding: 16px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(72, 89, 94, 0.12);
-}
-
-.summary-card strong {
-  display: block;
-  margin: 8px 0 6px;
-  font-size: 1.06rem;
-}
-
 .empty-state,
 .loading-view {
   padding: 28px;
@@ -385,7 +339,6 @@ a {
 @media (max-width: 1100px) {
   .workspace,
   .field-grid,
-  .summary-grid,
   .detail-grid {
     grid-template-columns: 1fr;
   }

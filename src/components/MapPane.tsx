@@ -1,31 +1,21 @@
 import { useEffect, useRef } from 'react'
 import maplibregl, { GeoJSONSource, Map } from 'maplibre-gl'
 import type { LngLatBoundsLike } from 'maplibre-gl'
-import { PMTiles, Protocol } from 'pmtiles'
-import { buildGoogleMapsLink } from '../lib/app-helpers.ts'
-import type { LayerVisibilityState, PokeLidRecord } from '../types.ts'
+import {
+  buildGoogleMapsLink,
+  buildGoogleNavigationLink,
+} from '../lib/app-helpers.ts'
+import type { PokeLidRecord } from '../types.ts'
 
 type MapPaneProps = {
   activeId: string | null
-  layerVisibility: LayerVisibilityState
   lids: PokeLidRecord[]
   onSelect: (manholeNo: string) => void
   visibleLids: PokeLidRecord[]
 }
 
-const protocol = new Protocol()
-let protocolRegistered = false
-
-function ensurePmtilesProtocol() {
-  if (!protocolRegistered) {
-    maplibregl.addProtocol('pmtiles', protocol.tile)
-    protocolRegistered = true
-  }
-}
-
 export function MapPane({
   activeId,
-  layerVisibility,
   lids,
   onSelect,
   visibleLids,
@@ -38,11 +28,6 @@ export function MapPane({
     if (!containerRef.current || mapRef.current) {
       return
     }
-
-    ensurePmtilesProtocol()
-    protocol.add(
-      new PMTiles(new URL(`${import.meta.env.BASE_URL}data/transit.pmtiles`, window.location.href).toString()),
-    )
 
     const map = new maplibregl.Map({
       container: containerRef.current,
@@ -69,61 +54,6 @@ export function MapPane({
       map.addSource('pokelids', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
-      })
-
-      map.addSource('transit', {
-        type: 'vector',
-        url: `pmtiles://${new URL(`${import.meta.env.BASE_URL}data/transit.pmtiles`, window.location.href).toString()}`,
-      })
-
-      map.addLayer({
-        id: 'rail-routes',
-        type: 'line',
-        source: 'transit',
-        'source-layer': 'rail_routes',
-        paint: {
-          'line-color': '#65818a',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 4, 0.7, 10, 2.1],
-          'line-opacity': 0.38,
-        },
-      })
-
-      map.addLayer({
-        id: 'train-stations',
-        type: 'circle',
-        source: 'transit',
-        'source-layer': 'train_stations',
-        paint: {
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 2.5, 11, 5.4],
-          'circle-color': '#234354',
-          'circle-stroke-color': '#f5f7f4',
-          'circle-stroke-width': 1.1,
-        },
-      })
-
-      map.addLayer({
-        id: 'bus-stops',
-        type: 'circle',
-        source: 'transit',
-        'source-layer': 'bus_stops',
-        paint: {
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 1.8, 11, 4],
-          'circle-color': '#7ea38b',
-          'circle-opacity': 0.64,
-        },
-      })
-
-      map.addLayer({
-        id: 'bus-stations',
-        type: 'circle',
-        source: 'transit',
-        'source-layer': 'bus_stations',
-        paint: {
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 2.5, 11, 6],
-          'circle-color': '#426c4a',
-          'circle-stroke-color': '#f5f7f4',
-          'circle-stroke-width': 1,
-        },
       })
 
       map.addLayer({
@@ -215,20 +145,6 @@ export function MapPane({
       return
     }
 
-    map.setLayoutProperty('rail-routes', 'visibility', layerVisibility.railRoutes ? 'visible' : 'none')
-    map.setLayoutProperty('train-stations', 'visibility', layerVisibility.trainStations ? 'visible' : 'none')
-    map.setLayoutProperty('bus-stops', 'visibility', layerVisibility.busStops ? 'visible' : 'none')
-    map.setLayoutProperty('bus-stations', 'visibility', layerVisibility.busStations ? 'visible' : 'none')
-    map.setLayoutProperty('pokelid-outline', 'visibility', layerVisibility.pokeLids ? 'visible' : 'none')
-    map.setLayoutProperty('pokelid-fill', 'visibility', layerVisibility.pokeLids ? 'visible' : 'none')
-  }, [layerVisibility])
-
-  useEffect(() => {
-    const map = mapRef.current
-    if (!map || !map.isStyleLoaded()) {
-      return
-    }
-
     popupRef.current?.remove()
     popupRef.current = null
 
@@ -257,6 +173,7 @@ export function MapPane({
             <strong>${lid.name}</strong>
             <p>${lid.prefName}</p>
             <a href="${buildGoogleMapsLink(lid.lat, lid.lng)}" target="_blank" rel="noreferrer">Googleマップで開く</a>
+            <a href="${buildGoogleNavigationLink(lid.lat, lid.lng)}" target="_blank" rel="noreferrer">Googleでナビ</a>
           </div>
         </article>
       `)

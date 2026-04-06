@@ -27,19 +27,11 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install tippecanoe
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y tippecanoe unzip
-
       - name: Install dependencies
         run: npm ci
 
       - name: Build
         run: npm run build
-
-      - name: Validate generated data
-        run: npm run validate:data
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

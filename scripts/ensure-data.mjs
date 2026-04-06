@@ -2,8 +2,6 @@ import { access, readFile } from 'node:fs/promises'
 
 const files = [
   new URL('../public/data/pokelids.json', import.meta.url),
-  new URL('../public/data/transit-index.json', import.meta.url),
-  new URL('../public/data/transit.pmtiles', import.meta.url),
 ]
 
 for (const file of files) {
