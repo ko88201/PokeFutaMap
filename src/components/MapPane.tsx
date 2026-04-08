@@ -1,10 +1,11 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import maplibregl, { GeoJSONSource, Map } from 'maplibre-gl'
 import type { LngLatBoundsLike } from 'maplibre-gl'
 import {
   buildGoogleMapsLink,
   buildGoogleNavigationLink,
 } from '../lib/app-helpers.ts'
+import { loadJapaneseFirstMapStyle } from '../lib/map-style.ts'
 import type { PokeLidRecord } from '../types.ts'
 
 type MapPaneProps = {
@@ -23,91 +24,97 @@ export function MapPane({
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<Map | null>(null)
   const popupRef = useRef<maplibregl.Popup | null>(null)
+  const [isMapReady, setIsMapReady] = useState(false)
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) {
       return
     }
 
-    const map = new maplibregl.Map({
-      container: containerRef.current,
-      style: {
-        version: 8,
-        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
-        sources: {
-          carto: {
-            type: 'raster',
-            tiles: ['https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'],
-            tileSize: 256,
-            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-          },
-        },
-        layers: [{ id: 'carto-base', type: 'raster', source: 'carto' }],
-      },
-      center: [137.95, 37.5],
-      zoom: 4.5,
-    })
+    let cancelled = false
+    let map: Map | null = null
 
-    map.addControl(new maplibregl.NavigationControl(), 'top-right')
+    void loadJapaneseFirstMapStyle().then((style) => {
+      if (cancelled || !containerRef.current) {
+        return
+      }
 
-    map.on('load', () => {
-      map.addSource('pokelids', {
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features: [] },
+      map = new maplibregl.Map({
+        container: containerRef.current,
+        style,
+        center: [137.95, 37.5],
+        zoom: 4.5,
       })
 
-      map.addLayer({
-        id: 'pokelid-outline',
-        type: 'circle',
-        source: 'pokelids',
-        paint: {
-          'circle-radius': ['case', ['==', ['get', 'manholeNo'], activeId ?? ''], 10, 7],
-          'circle-color': '#ffffff',
-          'circle-opacity': 0.96,
-        },
-      })
+      map.addControl(new maplibregl.NavigationControl(), 'top-right')
 
-      map.addLayer({
-        id: 'pokelid-fill',
-        type: 'circle',
-        source: 'pokelids',
-        paint: {
-          'circle-radius': ['case', ['==', ['get', 'manholeNo'], activeId ?? ''], 7.2, 4.6],
-          'circle-color': '#f07f45',
-          'circle-stroke-color': '#8c3517',
-          'circle-stroke-width': 1.2,
-        },
-      })
-
-      map.on('click', 'pokelid-fill', (event) => {
-        const manholeNo = event.features?.[0]?.properties?.manholeNo
-        if (typeof manholeNo === 'string') {
-          onSelect(manholeNo)
+      map.on('load', () => {
+        if (cancelled) {
+          return
         }
+
+        map?.addSource('pokelids', {
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
+        })
+
+        map?.addLayer({
+          id: 'pokelid-outline',
+          type: 'circle',
+          source: 'pokelids',
+          paint: {
+            'circle-radius': ['case', ['==', ['get', 'manholeNo'], activeId ?? ''], 10, 7],
+            'circle-color': '#ffffff',
+            'circle-opacity': 0.96,
+          },
+        })
+
+        map?.addLayer({
+          id: 'pokelid-fill',
+          type: 'circle',
+          source: 'pokelids',
+          paint: {
+            'circle-radius': ['case', ['==', ['get', 'manholeNo'], activeId ?? ''], 7.2, 4.6],
+            'circle-color': '#f07f45',
+            'circle-stroke-color': '#8c3517',
+            'circle-stroke-width': 1.2,
+          },
+        })
+
+        map?.on('click', 'pokelid-fill', (event) => {
+          const manholeNo = event.features?.[0]?.properties?.manholeNo
+          if (typeof manholeNo === 'string') {
+            onSelect(manholeNo)
+          }
+        })
+
+        map?.on('mouseenter', 'pokelid-fill', () => {
+          map?.getCanvas().style.setProperty('cursor', 'pointer')
+        })
+
+        map?.on('mouseleave', 'pokelid-fill', () => {
+          map?.getCanvas().style.removeProperty('cursor')
+        })
+
+        setIsMapReady(true)
       })
 
-      map.on('mouseenter', 'pokelid-fill', () => {
-        map.getCanvas().style.cursor = 'pointer'
-      })
-
-      map.on('mouseleave', 'pokelid-fill', () => {
-        map.getCanvas().style.cursor = ''
-      })
+      mapRef.current = map
     })
-
-    mapRef.current = map
 
     return () => {
+      cancelled = true
+      setIsMapReady(false)
       popupRef.current?.remove()
       popupRef.current = null
-      map.remove()
+      map?.remove()
       mapRef.current = null
     }
   }, [activeId, onSelect])
 
   useEffect(() => {
     const map = mapRef.current
-    if (!map || !map.isStyleLoaded()) {
+    if (!map || !isMapReady) {
       return
     }
 
@@ -137,11 +144,11 @@ export function MapPane({
         map.fitBounds(bounds, { padding: 48, duration: 800 })
       }
     }
-  }, [activeId, visibleLids])
+  }, [activeId, isMapReady, visibleLids])
 
   useEffect(() => {
     const map = mapRef.current
-    if (!map || !map.isStyleLoaded()) {
+    if (!map || !isMapReady) {
       return
     }
 
@@ -178,7 +185,7 @@ export function MapPane({
         </article>
       `)
       .addTo(map)
-  }, [activeId, lids])
+  }, [activeId, isMapReady, lids])
 
   return <div className="map-canvas" ref={containerRef} />
 }
