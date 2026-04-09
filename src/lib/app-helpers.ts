@@ -2,11 +2,14 @@ import type { QueryState } from '../types.ts'
 
 export function getInitialQueryState(): QueryState {
   const params = new URLSearchParams(window.location.search)
+  const pref = params.get('pref') ?? ''
+  const area = params.get('area') ?? ''
+  const pokemon = params.get('pokemon') ?? ''
 
   return {
-    pref: params.get('pref') ?? '',
-    area: params.get('area') ?? '',
-    pokemon: params.get('pokemon') ?? '',
+    pref,
+    area: pref ? '' : area,
+    pokemon: pref || area ? '' : pokemon,
     newOnly: params.get('new') === '1',
   }
 }

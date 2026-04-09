@@ -151,7 +151,12 @@ function App() {
                 <span>都道府県</span>
                 <select
                   onChange={(event) => {
-                    setQuery((current) => ({ ...current, pref: event.target.value }))
+                    setQuery((current) => ({
+                      ...current,
+                      pref: event.target.value,
+                      area: '',
+                      pokemon: '',
+                    }))
                   }}
                   value={query.pref}
                 >
@@ -168,7 +173,12 @@ function App() {
                 <span>エリア</span>
                 <select
                   onChange={(event) => {
-                    setQuery((current) => ({ ...current, area: event.target.value }))
+                    setQuery((current) => ({
+                      ...current,
+                      pref: '',
+                      area: event.target.value,
+                      pokemon: '',
+                    }))
                   }}
                   value={query.area}
                 >
@@ -189,6 +199,8 @@ function App() {
                   onChange={(event) => {
                     setQuery((current) => ({
                       ...current,
+                      pref: '',
+                      area: '',
                       pokemon: event.target.value,
                     }))
                   }}
