@@ -22,6 +22,16 @@ function App() {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [mobilePane, setMobilePane] = useState<'list' | 'map'>('list')
 
+  function resetFilters() {
+    setQuery({
+      pref: '',
+      area: '',
+      pokemon: '',
+      newOnly: false,
+    })
+    setActiveId(null)
+  }
+
   useEffect(() => {
     let cancelled = false
 
@@ -139,101 +149,130 @@ function App() {
           className={classNames('sidebar', mobilePane === 'map' && 'mobile-hidden')}
         >
           <section className="panel filter-panel">
-            <div className="panel-heading">
-              <h2>ポケふたを探す</h2>
-              <p>
-                {visibleLids.length}件表示中 / 全{readyData.lids.length}件
+            <div className="panel-heading filter-heading">
+              <div>
+                <p className="panel-kicker">Explorer</p>
+                <h2>ポケふたを探す</h2>
+              </div>
+              <p className="count-pill">
+                <strong>{visibleLids.length}件表示中</strong>
+                <span>全{readyData.lids.length}件</span>
               </p>
             </div>
 
             <div className="field-grid">
               <label className="field">
-                <span>都道府県</span>
-                <select
-                  onChange={(event) => {
-                    setQuery((current) => ({
-                      ...current,
-                      pref: event.target.value,
-                      area: '',
-                      pokemon: '',
-                    }))
-                  }}
-                  value={query.pref}
-                >
-                  <option value="">すべての都道府県</option>
-                  {allPrefectures.map((prefecture) => (
-                    <option key={prefecture} value={prefecture}>
-                      {prefecture}
-                    </option>
-                  ))}
-                </select>
+                <span className="field-label">都道府県</span>
+                <div className="field-control">
+                  <select
+                    onChange={(event) => {
+                      setQuery((current) => ({
+                        ...current,
+                        pref: event.target.value,
+                        area: '',
+                        pokemon: '',
+                      }))
+                    }}
+                    value={query.pref}
+                  >
+                    <option value="">すべての都道府県</option>
+                    {allPrefectures.map((prefecture) => (
+                      <option key={prefecture} value={prefecture}>
+                        {prefecture}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </label>
 
               <label className="field">
-                <span>エリア</span>
-                <select
-                  onChange={(event) => {
-                    setQuery((current) => ({
-                      ...current,
-                      pref: '',
-                      area: event.target.value,
-                      pokemon: '',
-                    }))
-                  }}
-                  value={query.area}
-                >
-                  <option value="">すべてのエリア</option>
-                  {areaOptions.map((area) => (
-                    <option key={area} value={area}>
-                      {areaLabel(area)}
-                    </option>
-                  ))}
-                </select>
+                <span className="field-label">エリア</span>
+                <div className="field-control">
+                  <select
+                    onChange={(event) => {
+                      setQuery((current) => ({
+                        ...current,
+                        pref: '',
+                        area: event.target.value,
+                        pokemon: '',
+                      }))
+                    }}
+                    value={query.area}
+                  >
+                    <option value="">すべてのエリア</option>
+                    {areaOptions.map((area) => (
+                      <option key={area} value={area}>
+                        {areaLabel(area)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </label>
+
+              <label className="field field-wide">
+                <span className="field-label">ポケモン</span>
+                <div className="field-control">
+                  <select
+                    onChange={(event) => {
+                      setQuery((current) => ({
+                        ...current,
+                        pref: '',
+                        area: '',
+                        pokemon: event.target.value,
+                      }))
+                    }}
+                    value={query.pokemon}
+                  >
+                    <option value="">すべてのポケモン</option>
+                    {allPokemon.map((pokemon) => (
+                      <option key={pokemon.number} value={String(pokemon.number)}>
+                        {formatPokemonLabel(pokemon)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </label>
             </div>
 
-            <div className="field-grid">
-              <label className="field">
-                <span>ポケモン</span>
-                <select
-                  onChange={(event) => {
+            <div className="filter-utility-bar">
+              <div className="filter-note">
+                <span className="filter-note-label">Refine</span>
+                <p>条件を一つ選んで、新しく公開されたポケふたを素早く探せます。</p>
+              </div>
+              <div className="filter-actions">
+                <button
+                  aria-pressed={query.newOnly}
+                  className={classNames('toggle-switch', query.newOnly && 'active')}
+                  onClick={() => {
                     setQuery((current) => ({
                       ...current,
-                      pref: '',
-                      area: '',
-                      pokemon: event.target.value,
+                      newOnly: !current.newOnly,
                     }))
                   }}
-                  value={query.pokemon}
+                  type="button"
                 >
-                  <option value="">すべてのポケモン</option>
-                  {allPokemon.map((pokemon) => (
-                    <option key={pokemon.number} value={String(pokemon.number)}>
-                      {formatPokemonLabel(pokemon)}
-                    </option>
-                  ))}
-                </select>
-              </label>
+                  <span className="toggle-copy">
+                    <strong>新着のみ表示</strong>
+                    <small>{query.newOnly ? '最新公開を表示中' : 'すべての公開分を表示'}</small>
+                  </span>
+                  <span className="toggle-track" aria-hidden="true">
+                    <span className="toggle-thumb" />
+                  </span>
+                </button>
 
-              <label className="checkbox-field">
-                <input
-                  checked={query.newOnly}
-                  onChange={(event) => {
-                    setQuery((current) => ({
-                      ...current,
-                      newOnly: event.target.checked,
-                    }))
-                  }}
-                  type="checkbox"
-                />
-                <span>新着のみ表示</span>
-              </label>
+                <button className="secondary-action" onClick={resetFilters} type="button">
+                  重設所有選項
+                </button>
+              </div>
             </div>
           </section>
 
           <section className="panel results-panel">
-            <div className="panel-heading">
-              <h2>ポケふた一覧</h2>
+            <div className="panel-heading section-heading">
+              <div>
+                <p className="panel-kicker">Collection</p>
+                <h2>ポケふた一覧</h2>
+              </div>
               <p>カードを押すと地図と詳細が連動します。</p>
             </div>
             <div className="card-list">
@@ -252,14 +291,16 @@ function App() {
                   >
                     <img alt={lid.name} src={lid.imageUrl} />
                     <div className="lid-copy">
-                      <div className="lid-title-row">
-                        <strong>{lid.name}</strong>
+                      <div className="lid-meta-row">
+                        <span className="lid-location">
+                          {lid.prefName} · {areaLabel(lid.area)}
+                        </span>
                         {lid.isNew ? <span className="badge">新着</span> : null}
                       </div>
-                      <span>
-                        {lid.prefName} · {areaLabel(lid.area)}
-                      </span>
-                      <p>{lid.pokemon.map(formatPokemonLabel).join(' · ')}</p>
+                      <strong>{lid.name}</strong>
+                      <p className="lid-pokemon-line">
+                        {lid.pokemon.map(formatPokemonLabel).join(' · ')}
+                      </p>
                     </div>
                   </button>
                 )
@@ -278,8 +319,11 @@ function App() {
           className={classNames('map-column', mobilePane === 'list' && 'mobile-hidden')}
         >
           <section className="panel map-panel">
-            <div className="panel-heading">
-              <h2>地図</h2>
+            <div className="panel-heading section-heading">
+              <div>
+                <p className="panel-kicker">Atlas</p>
+                <h2>地図</h2>
+              </div>
               <p>日本各地のポケふたの位置を地図で確認できます。</p>
             </div>
             <MapPane
@@ -291,30 +335,34 @@ function App() {
           </section>
 
           <section className="panel detail-panel">
-            <div className="panel-heading">
-              <h2>選択中のポケふた</h2>
+            <div className="panel-heading section-heading">
+              <div>
+                <p className="panel-kicker">Spotlight</p>
+                <h2>選択中のポケふた</h2>
+              </div>
               <p>選択したポケふたの画像と場所を確認できます。</p>
             </div>
             {activeLid ? (
               <div className="detail-grid">
                 <img alt={activeLid.name} className="detail-image" src={activeLid.imageUrl} />
                 <div className="detail-copy">
-                  <div className="detail-title">
-                    <h3>{activeLid.name}</h3>
-                    {activeLid.isNew ? <span className="badge">新着</span> : null}
-                  </div>
                   <p className="detail-meta">
                     {activeLid.prefName} · {areaLabel(activeLid.area)} · ポケふた #
                     {activeLid.manholeNo}
                   </p>
+                  <div className="detail-title">
+                    <h3>{activeLid.name}</h3>
+                    {activeLid.isNew ? <span className="badge">新着</span> : null}
+                  </div>
                   <p className="detail-pokemon">
                     {activeLid.pokemon.map(formatPokemonLabel).join(' · ')}
                   </p>
                   <div className="detail-links">
-                    <a href={activeLid.sourceUrl} rel="noreferrer" target="_blank">
+                    <a className="detail-action" href={activeLid.sourceUrl} rel="noreferrer" target="_blank">
                       公式ページ
                     </a>
                     <a
+                      className="detail-action"
                       href={buildGoogleMapsLink(activeLid.lat, activeLid.lng)}
                       rel="noreferrer"
                       target="_blank"
@@ -322,6 +370,7 @@ function App() {
                       Googleマップで開く
                     </a>
                     <a
+                      className="detail-action detail-action-primary"
                       href={buildGoogleNavigationLink(activeLid.lat, activeLid.lng)}
                       rel="noreferrer"
                       target="_blank"

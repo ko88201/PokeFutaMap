@@ -208,17 +208,19 @@ export function MapPane({
       closeButton: false,
       closeOnClick: false,
       offset: 16,
-      maxWidth: '290px',
+      maxWidth: '320px',
     })
       .setLngLat([lid.lng, lid.lat])
       .setHTML(`
         <article class="map-popup">
           <img src="${lid.imageUrl}" alt="${lid.name}" />
-          <div>
+          <div class="map-popup-copy">
+            <p class="map-popup-meta">${lid.prefName}</p>
             <strong>${lid.name}</strong>
-            <p>${lid.prefName}</p>
-            <a href="${buildGoogleMapsLink(lid.lat, lid.lng)}" target="_blank" rel="noreferrer">Googleマップで開く</a>
-            <a href="${buildGoogleNavigationLink(lid.lat, lid.lng)}" target="_blank" rel="noreferrer">Googleでナビ</a>
+            <div class="map-popup-actions">
+              <a class="popup-action" href="${buildGoogleMapsLink(lid.lat, lid.lng)}" target="_blank" rel="noreferrer">Googleマップで開く</a>
+              <a class="popup-action popup-action-primary" href="${buildGoogleNavigationLink(lid.lat, lid.lng)}" target="_blank" rel="noreferrer">Googleでナビ</a>
+            </div>
           </div>
         </article>
       `)
