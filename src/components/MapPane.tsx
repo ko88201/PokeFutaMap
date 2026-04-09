@@ -24,6 +24,7 @@ export function MapPane({
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<Map | null>(null)
   const popupRef = useRef<maplibregl.Popup | null>(null)
+  const hasFramedRef = useRef(false)
   const [isMapReady, setIsMapReady] = useState(false)
 
   useEffect(() => {
@@ -63,7 +64,7 @@ export function MapPane({
           type: 'circle',
           source: 'pokelids',
           paint: {
-            'circle-radius': ['case', ['==', ['get', 'manholeNo'], activeId ?? ''], 10, 7],
+            'circle-radius': 7,
             'circle-color': '#ffffff',
             'circle-opacity': 0.96,
           },
@@ -74,7 +75,7 @@ export function MapPane({
           type: 'circle',
           source: 'pokelids',
           paint: {
-            'circle-radius': ['case', ['==', ['get', 'manholeNo'], activeId ?? ''], 7.2, 4.6],
+            'circle-radius': 4.6,
             'circle-color': '#f07f45',
             'circle-stroke-color': '#8c3517',
             'circle-stroke-width': 1.2,
@@ -107,10 +108,11 @@ export function MapPane({
       setIsMapReady(false)
       popupRef.current?.remove()
       popupRef.current = null
+      hasFramedRef.current = false
       map?.remove()
       mapRef.current = null
     }
-  }, [activeId, onSelect])
+  }, [onSelect])
 
   useEffect(() => {
     const map = mapRef.current
@@ -138,13 +140,48 @@ export function MapPane({
       })),
     })
 
-    if (!activeId && visibleLids.length > 0) {
+    const activeStillVisible = activeId
+      ? visibleLids.some((lid) => lid.manholeNo === activeId)
+      : false
+
+    if (activeStillVisible) {
+      return
+    }
+
+    if (visibleLids.length === 0) {
+      hasFramedRef.current = false
+      return
+    }
+
+    if (!activeId || !hasFramedRef.current) {
       const bounds = getBoundsForLids(visibleLids)
       if (bounds) {
         map.fitBounds(bounds, { padding: 48, duration: 800 })
+        hasFramedRef.current = true
       }
     }
   }, [activeId, isMapReady, visibleLids])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !isMapReady) {
+      return
+    }
+
+    map.setPaintProperty('pokelid-outline', 'circle-radius', [
+      'case',
+      ['==', ['get', 'manholeNo'], activeId ?? ''],
+      10,
+      7,
+    ])
+
+    map.setPaintProperty('pokelid-fill', 'circle-radius', [
+      'case',
+      ['==', ['get', 'manholeNo'], activeId ?? ''],
+      7.2,
+      4.6,
+    ])
+  }, [activeId, isMapReady])
 
   useEffect(() => {
     const map = mapRef.current
@@ -165,6 +202,7 @@ export function MapPane({
       zoom: 10.3,
       duration: 900,
     })
+    hasFramedRef.current = true
 
     popupRef.current = new maplibregl.Popup({
       closeButton: false,
