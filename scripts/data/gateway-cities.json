@@ -1,0 +1,68 @@
+[
+  {
+    "id": "gateway-tokyo",
+    "name": "Tokyo",
+    "lat": 35.681236,
+    "lng": 139.767125
+  },
+  {
+    "id": "gateway-yokohama",
+    "name": "Yokohama",
+    "lat": 35.466188,
+    "lng": 139.622715
+  },
+  {
+    "id": "gateway-nagoya",
+    "name": "Nagoya",
+    "lat": 35.170694,
+    "lng": 136.881637
+  },
+  {
+    "id": "gateway-kyoto",
+    "name": "Kyoto",
+    "lat": 34.985489,
+    "lng": 135.758376
+  },
+  {
+    "id": "gateway-osaka",
+    "name": "Osaka",
+    "lat": 34.702485,
+    "lng": 135.495951
+  },
+  {
+    "id": "gateway-kobe",
+    "name": "Kobe",
+    "lat": 34.694125,
+    "lng": 135.195511
+  },
+  {
+    "id": "gateway-fukuoka",
+    "name": "Fukuoka",
+    "lat": 33.590355,
+    "lng": 130.420224
+  },
+  {
+    "id": "gateway-sapporo",
+    "name": "Sapporo",
+    "lat": 43.068661,
+    "lng": 141.350755
+  },
+  {
+    "id": "gateway-sendai",
+    "name": "Sendai",
+    "lat": 38.260132,
+    "lng": 140.882438
+  },
+  {
+    "id": "gateway-hiroshima",
+    "name": "Hiroshima",
+    "lat": 34.397639,
+    "lng": 132.475715
+  },
+  {
+    "id": "gateway-naha",
+    "name": "Naha",
+    "lat": 26.212545,
+    "lng": 127.680932
+  }
+]

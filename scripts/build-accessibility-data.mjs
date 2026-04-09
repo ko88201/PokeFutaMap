@@ -2,7 +2,16 @@ import { createHash } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 
 const DATA_PATH = new URL('../public/data/pokelids.json', import.meta.url)
+const GATEWAY_CITIES_PATH = new URL('./data/gateway-cities.json', import.meta.url)
+const INTERNATIONAL_AIRPORTS_PATH = new URL(
+  './data/international-airports.json',
+  import.meta.url,
+)
 const OVERRIDES_PATH = new URL('./data/accessibility-overrides.json', import.meta.url)
+const SHINKANSEN_STATIONS_PATH = new URL(
+  './data/shinkansen-stations.json',
+  import.meta.url,
+)
 const CACHE_DIR = new URL('../.cache/accessibility/', import.meta.url)
 
 const CACHE_VERSION = 'accessibility-v2'
@@ -13,6 +22,7 @@ const OVERPASS_ENDPOINTS = [
 const BATCH_SIZE = 40
 const QUERY_CONCURRENCY = 2
 const QUERY_DELAY_MS = 350
+const STATIC_BATCH_SIZE = 12
 
 const FEATURE_SPECS = [
   {
@@ -71,6 +81,9 @@ const REASON_ORDER = [
   'bus_access',
   'ferry_access',
   'airport_nearby',
+  'intl_airport_access',
+  'shinkansen_access',
+  'gateway_city_access',
   'clustered_trip',
   'island',
   'mountain',
@@ -87,9 +100,18 @@ const BAND_BY_SCORE = {
 }
 
 const lids = JSON.parse(await readFile(DATA_PATH, 'utf8'))
+const gatewayCities = JSON.parse(await readFile(GATEWAY_CITIES_PATH, 'utf8'))
+const internationalAirports = JSON.parse(
+  await readFile(INTERNATIONAL_AIRPORTS_PATH, 'utf8'),
+)
 const overrides = JSON.parse(await readFile(OVERRIDES_PATH, 'utf8'))
+const shinkansenStationSeeds = JSON.parse(
+  await readFile(SHINKANSEN_STATIONS_PATH, 'utf8'),
+)
 
 await mkdir(CACHE_DIR, { recursive: true })
+
+const shinkansenStations = await resolveNamedRailStations(shinkansenStationSeeds)
 
 const transportMetrics = Object.fromEntries(
   lids.map((lid) => [
@@ -136,6 +158,11 @@ const enriched = lids.map((lid) =>
     lid,
     clusterMetrics[lid.manholeNo],
     transportMetrics[lid.manholeNo],
+    {
+      gatewayCities,
+      internationalAirports,
+      shinkansenStations,
+    },
     overrides[lid.manholeNo] ?? null,
   ),
 )
@@ -269,14 +296,24 @@ function computeClusterMetrics(allLids) {
   return metrics
 }
 
-function buildAccessibilityRecord(lid, clusterMetric, transportMetric, override) {
+function buildAccessibilityRecord(
+  lid,
+  clusterMetric,
+  transportMetric,
+  entryReferenceData,
+  override,
+) {
   const metrics = {
+    entryAccessModifier: 0,
     nearestLidKm: clusterMetric.nearestLidKm,
     nearbyLids10km: clusterMetric.nearbyLids10km,
     nearestTrainKm: roundDistance(transportMetric.nearestTrainKm),
     nearestBusHubKm: roundDistance(transportMetric.nearestBusHubKm),
     nearestFerryKm: roundDistance(transportMetric.nearestFerryKm),
     nearestAirportKm: roundDistance(transportMetric.nearestAirportKm),
+    nearestIntlAirportKm: null,
+    nearestShinkansenKm: null,
+    nearestGatewayCityKm: null,
     isIsland: override?.isIsland ?? false,
     isMountain: override?.isMountain ?? false,
   }
@@ -385,11 +422,28 @@ function buildAccessibilityRecord(lid, clusterMetric, transportMetric, override)
     }
   }
 
+  const baseScore = roundedScore
+  const entryAccessMetrics = computeEntryAccessMetrics(lid, entryReferenceData)
+  metrics.nearestIntlAirportKm = entryAccessMetrics.nearestIntlAirportKm
+  metrics.nearestShinkansenKm = entryAccessMetrics.nearestShinkansenKm
+  metrics.nearestGatewayCityKm = entryAccessMetrics.nearestGatewayCityKm
+  metrics.entryAccessModifier = entryAccessMetrics.entryAccessModifier
+
+  for (const reason of entryAccessMetrics.reasons) {
+    reasons.add(reason)
+  }
+
+  const finalScore = clamp(
+    Math.round(baseScore + entryAccessMetrics.entryAccessModifier),
+    1,
+    5,
+  )
+
   return {
     ...lid,
     accessibility: {
-      score: roundedScore,
-      band: BAND_BY_SCORE[roundedScore],
+      score: finalScore,
+      band: BAND_BY_SCORE[finalScore],
       reasons: REASON_ORDER.filter((reason) => reasons.has(reason)),
       metrics,
       confidence: override ? 'overridden' : 'estimated',
@@ -408,6 +462,181 @@ function findNearestDistanceKm(lid, features) {
   }
 
   return Number.isFinite(best) ? best : null
+}
+
+function computeEntryAccessMetrics(lid, referenceData) {
+  const nearestIntlAirportKm = roundDistance(
+    findNearestDistanceKm(lid, referenceData.internationalAirports),
+  )
+  const nearestShinkansenKm = roundDistance(
+    findNearestDistanceKm(lid, referenceData.shinkansenStations),
+  )
+  const nearestGatewayCityKm = roundDistance(
+    findNearestDistanceKm(lid, referenceData.gatewayCities),
+  )
+
+  let entryAccessModifier = 0
+  const reasons = new Set()
+
+  if (nearestIntlAirportKm !== null && nearestIntlAirportKm <= 25) {
+    entryAccessModifier -= 0.75
+    reasons.add('intl_airport_access')
+  } else if (nearestIntlAirportKm !== null && nearestIntlAirportKm <= 60) {
+    entryAccessModifier -= 0.5
+    reasons.add('intl_airport_access')
+  }
+
+  if (nearestShinkansenKm !== null && nearestShinkansenKm <= 8) {
+    entryAccessModifier -= 0.75
+    reasons.add('shinkansen_access')
+  } else if (nearestShinkansenKm !== null && nearestShinkansenKm <= 20) {
+    entryAccessModifier -= 0.5
+    reasons.add('shinkansen_access')
+  }
+
+  let gatewayModifier = 0
+  if (nearestGatewayCityKm !== null && nearestGatewayCityKm <= 20) {
+    gatewayModifier = -0.5
+  } else if (nearestGatewayCityKm !== null && nearestGatewayCityKm <= 50) {
+    gatewayModifier = -0.25
+  }
+
+  if (
+    gatewayModifier < -0.25 &&
+    (reasons.has('intl_airport_access') || reasons.has('shinkansen_access'))
+  ) {
+    gatewayModifier = -0.25
+  }
+
+  if (gatewayModifier !== 0) {
+    entryAccessModifier += gatewayModifier
+    reasons.add('gateway_city_access')
+  }
+
+  return {
+    nearestIntlAirportKm,
+    nearestShinkansenKm,
+    nearestGatewayCityKm,
+    entryAccessModifier: Math.max(entryAccessModifier, -1.5),
+    reasons,
+  }
+}
+
+async function resolveNamedRailStations(entries) {
+  const batches = chunk(entries, STATIC_BATCH_SIZE)
+  const resolvedStations = []
+  const missingStations = []
+
+  for (const [batchIndex, batch] of batches.entries()) {
+    console.log(
+      `[accessibility] Resolving shinkansen stations batch ${batchIndex + 1}/${batches.length}...`,
+    )
+    const features = await fetchNamedRailBatch(batch, batchIndex)
+
+    for (const entry of batch) {
+      const matched = findNamedRailFeature(entry, features)
+      if (!matched) {
+        missingStations.push(entry.name)
+        continue
+      }
+
+      resolvedStations.push({
+        id: entry.id,
+        name: entry.name,
+        lat: matched.lat,
+        lng: matched.lng,
+      })
+    }
+
+    await sleep(QUERY_DELAY_MS)
+  }
+
+  if (missingStations.length > 0) {
+    throw new Error(
+      `Missing shinkansen station coordinates for: ${missingStations.join(', ')}`,
+    )
+  }
+
+  return resolvedStations
+}
+
+async function fetchNamedRailBatch(batch, batchIndex) {
+  const batchNames = [...new Set(batch.flatMap((entry) => entry.queryNames ?? [entry.name]))]
+  const cacheKey = createHash('sha1')
+    .update(CACHE_VERSION)
+    .update('named-rail-v1')
+    .update(String(batchIndex))
+    .update(JSON.stringify(batch))
+    .digest('hex')
+
+  const cachePath = new URL(`${cacheKey}.json`, CACHE_DIR)
+
+  try {
+    const cached = await readFile(cachePath, 'utf8')
+    return JSON.parse(cached)
+  } catch {
+    // Cache miss; continue to fetch.
+  }
+
+  const namePattern = batchNames.map(escapeRegex).join('|')
+  const query = [
+    '[out:json][timeout:60];(',
+    `node["railway"="station"]["name"~"^(${namePattern})$"]["train"!="no"]["station"!="subway"];`,
+    `way["railway"="station"]["name"~"^(${namePattern})$"]["train"!="no"]["station"!="subway"];`,
+    `relation["railway"="station"]["name"~"^(${namePattern})$"]["train"!="no"]["station"!="subway"];`,
+    ');out center tags;',
+  ].join('')
+
+  let lastError = null
+  for (const endpoint of OVERPASS_ENDPOINTS) {
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'content-type': 'text/plain;charset=UTF-8',
+            accept: 'application/json',
+          },
+          body: query,
+          signal: AbortSignal.timeout(90_000),
+        })
+
+        const text = await response.text()
+        if (!response.ok) {
+          if (response.status === 429) {
+            await sleep(15_000 * (attempt + 1))
+          }
+          throw new Error(`Overpass returned ${response.status}`)
+        }
+
+        const payload = JSON.parse(text)
+        const features = normalizeOverpassElements(payload.elements ?? [])
+        await writeFile(cachePath, `${JSON.stringify(features, null, 2)}\n`)
+        return features
+      } catch (error) {
+        lastError = error
+      }
+    }
+  }
+
+  throw new Error(
+    `Failed to resolve named rail stations: ${
+      lastError instanceof Error ? lastError.message : String(lastError)
+    }`,
+  )
+}
+
+function findNamedRailFeature(entry, features) {
+  const queryNames = entry.queryNames ?? [entry.name]
+
+  for (const queryName of queryNames) {
+    const matched = features.find((feature) => feature.name === queryName)
+    if (matched) {
+      return matched
+    }
+  }
+
+  return null
 }
 
 function haversineKm(left, right) {
@@ -450,6 +679,10 @@ function chunk(values, size) {
 
 function sleep(durationMs) {
   return new Promise((resolve) => setTimeout(resolve, durationMs))
+}
+
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 function toCacheSeed(lid) {

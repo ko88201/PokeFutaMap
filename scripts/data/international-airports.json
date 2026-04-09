@@ -1,0 +1,56 @@
+[
+  {
+    "id": "intl-hnd",
+    "name": "Tokyo International Airport (Haneda)",
+    "lat": 35.5494,
+    "lng": 139.7798
+  },
+  {
+    "id": "intl-nrt",
+    "name": "Narita International Airport",
+    "lat": 35.772,
+    "lng": 140.3929
+  },
+  {
+    "id": "intl-kix",
+    "name": "Kansai International Airport",
+    "lat": 34.434722,
+    "lng": 135.244167
+  },
+  {
+    "id": "intl-ngo",
+    "name": "Central Japan International Airport",
+    "lat": 34.858333,
+    "lng": 136.805278
+  },
+  {
+    "id": "intl-cts",
+    "name": "New Chitose Airport",
+    "lat": 42.7752,
+    "lng": 141.6923
+  },
+  {
+    "id": "intl-fuk",
+    "name": "Fukuoka Airport",
+    "lat": 33.5859,
+    "lng": 130.451
+  },
+  {
+    "id": "intl-sdj",
+    "name": "Sendai Airport",
+    "lat": 38.1397,
+    "lng": 140.917
+  },
+  {
+    "id": "intl-hij",
+    "name": "Hiroshima Airport",
+    "lat": 34.4361,
+    "lng": 132.9194
+  },
+  {
+    "id": "intl-oka",
+    "name": "Naha Airport",
+    "lat": 26.1958,
+    "lng": 127.6469
+  }
+]

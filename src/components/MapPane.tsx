@@ -296,7 +296,7 @@ export function MapPane({
         <p className="map-legend-kicker">Access</p>
         <strong>可達性の目安</strong>
         <p>
-          駅・バス・港・空港と、周辺のふたの回りやすさから 1 〜 5 で表示します。
+          駅・バス・港・空港に加えて、国際線空港・新幹線・主要都市からの入りやすさも 1 〜 5 に反映します。
         </p>
         <div className="map-legend-scale">
           {ACCESSIBILITY_VISUALS.map((entry) => (

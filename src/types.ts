@@ -15,6 +15,9 @@ export type AccessibilityReason =
   | 'bus_access'
   | 'ferry_access'
   | 'airport_nearby'
+  | 'intl_airport_access'
+  | 'shinkansen_access'
+  | 'gateway_city_access'
   | 'clustered_trip'
   | 'island'
   | 'mountain'
@@ -22,11 +25,15 @@ export type AccessibilityReason =
   | 'remote_area'
 
 export type AccessibilityMetrics = {
+  entryAccessModifier: number
   nearbyLids10km: number
   nearestAirportKm: number | null
   nearestBusHubKm: number | null
   nearestFerryKm: number | null
+  nearestGatewayCityKm: number | null
+  nearestIntlAirportKm: number | null
   nearestLidKm: number
+  nearestShinkansenKm: number | null
   nearestTrainKm: number | null
   isIsland: boolean
   isMountain: boolean

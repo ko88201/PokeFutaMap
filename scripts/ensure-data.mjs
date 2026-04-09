@@ -27,6 +27,36 @@ for (const lid of pokelids) {
       `Poké Lid ${lid.manholeNo} is missing accessibility data. Run \`npm run sync:data\` before build.`,
     )
   }
+
+  const metrics = accessibility.metrics
+  if (
+    typeof metrics.nearestLidKm !== 'number' ||
+    typeof metrics.nearbyLids10km !== 'number' ||
+    typeof metrics.entryAccessModifier !== 'number' ||
+    typeof metrics.isIsland !== 'boolean' ||
+    typeof metrics.isMountain !== 'boolean'
+  ) {
+    throw new Error(
+      `Poké Lid ${lid.manholeNo} has incomplete accessibility metrics. Run \`npm run sync:data\` before build.`,
+    )
+  }
+
+  for (const key of [
+    'nearestTrainKm',
+    'nearestBusHubKm',
+    'nearestFerryKm',
+    'nearestAirportKm',
+    'nearestIntlAirportKm',
+    'nearestShinkansenKm',
+    'nearestGatewayCityKm',
+  ]) {
+    const value = metrics[key]
+    if (!(value === null || typeof value === 'number')) {
+      throw new Error(
+        `Poké Lid ${lid.manholeNo} has invalid metric \`${key}\`. Run \`npm run sync:data\` before build.`,
+      )
+    }
+  }
 }
 
 console.log(`Using checked-in data bundle with ${pokelids.length} Poké Lids.`)
