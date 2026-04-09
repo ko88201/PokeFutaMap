@@ -39,7 +39,7 @@ const INTERACTIVE_LAYERS = [
 type MapPaneProps = {
   activeId: string | null
   lids: PokeLidRecord[]
-  onSelect: (manholeNo: string) => void
+  onSelect: (manholeNo: string | null) => void
   visibleLids: PokeLidRecord[]
 }
 
@@ -162,6 +162,18 @@ export function MapPane({
             map?.getCanvas().style.removeProperty('cursor')
           })
         }
+
+        map?.on('click', (event) => {
+          const features = map?.queryRenderedFeatures(event.point, {
+            layers: [...INTERACTIVE_LAYERS],
+          })
+
+          if (!features || features.length > 0) {
+            return
+          }
+
+          onSelect(null)
+        })
 
         setIsMapReady(true)
       })
