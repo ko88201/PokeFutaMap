@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "sync:data": "node scripts/build-data.mjs",
+    "sync:data": "node scripts/build-data.mjs && node scripts/update-japanese-pokelids.mjs && node scripts/localize-display-data.mjs && node scripts/build-accessibility-data.mjs",
+    "sync:accessibility": "node scripts/build-accessibility-data.mjs",
     "build": "node scripts/ensure-data.mjs && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

@@ -1,0 +1,92 @@
+{
+  "59": {
+    "fixedScore": 4,
+    "removeReasons": ["remote_area"],
+    "note": "Ishikari is rail-light at the exact point, but still sits close to the Sapporo metro area."
+  },
+  "153": {
+    "isIsland": true,
+    "fixedScore": 5,
+    "addReasons": ["remote_area"],
+    "note": "Ogasawara requires ocean travel despite local clustering."
+  },
+  "154": {
+    "isIsland": true,
+    "fixedScore": 5,
+    "addReasons": ["remote_area"],
+    "note": "Ogasawara requires ocean travel despite local clustering."
+  },
+  "155": {
+    "isIsland": true,
+    "fixedScore": 5,
+    "addReasons": ["remote_area"],
+    "note": "Ogasawara requires ocean travel despite local clustering."
+  },
+  "156": {
+    "isIsland": true,
+    "fixedScore": 5,
+    "addReasons": ["remote_area"],
+    "note": "Ogasawara requires ocean travel despite local clustering."
+  },
+  "235": {
+    "isIsland": true,
+    "fixedScore": 4,
+    "note": "Ishigaki is airport-served but still requires island travel."
+  },
+  "236": {
+    "isIsland": true,
+    "fixedScore": 4,
+    "note": "Miyakojima is airport-served but still requires island travel."
+  },
+  "205": {
+    "fixedScore": 4,
+    "note": "Awaji is bridge-connected and easier than the raw rail metric suggests."
+  },
+  "343": {
+    "isMountain": true,
+    "fixedScore": 4,
+    "note": "Koyasan is mountainous but still has a meaningful rail approach."
+  },
+  "358": {
+    "isIsland": true,
+    "fixedScore": 4,
+    "note": "Shinkamigoto is still island travel, but ferry and airport access lower the harshest tier."
+  },
+  "381": {
+    "isIsland": true,
+    "fixedScore": 4,
+    "note": "Oki remains an island trip, but the nearby airport keeps it below the harshest tier."
+  },
+  "401": {
+    "isMountain": true,
+    "scoreAdjustment": 1,
+    "note": "Okura sits in a mountainous access context."
+  },
+  "402": {
+    "isMountain": true,
+    "fixedScore": 4,
+    "note": "Oguni is mountainous, but the nearby station keeps it below the harshest tier."
+  },
+  "423": {
+    "isIsland": true,
+    "fixedScore": 5,
+    "addReasons": ["remote_area"],
+    "note": "Tokashiki requires ferry-based island access."
+  },
+  "424": {
+    "isIsland": true,
+    "fixedScore": 5,
+    "addReasons": ["remote_area"],
+    "note": "Zamami requires ferry-based island access."
+  },
+  "425": {
+    "isIsland": true,
+    "fixedScore": 4,
+    "note": "Kumejima is airport-served but still requires island travel."
+  },
+  "428": {
+    "isIsland": true,
+    "fixedScore": 4,
+    "note": "Iki is airport-served but still requires island travel."
+  }
+}

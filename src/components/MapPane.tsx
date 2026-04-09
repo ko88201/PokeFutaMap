@@ -1,12 +1,40 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import maplibregl, { GeoJSONSource, Map } from 'maplibre-gl'
-import type { LngLatBoundsLike } from 'maplibre-gl'
+import type { ExpressionSpecification, LngLatBoundsLike } from 'maplibre-gl'
+import {
+  ACCESSIBILITY_VISUALS,
+  getAccessibilityBandLabel,
+  getAccessibilityReasonLabel,
+  getAccessibilityVisual,
+} from '../lib/accessibility.ts'
 import {
   buildGoogleMapsLink,
   buildGoogleNavigationLink,
 } from '../lib/app-helpers.ts'
 import { loadJapaneseFirstMapStyle } from '../lib/map-style.ts'
 import type { PokeLidRecord } from '../types.ts'
+
+const MARKER_COLOR_EXPRESSION: ExpressionSpecification = [
+  'match',
+  ['get', 'accessibilityScore'],
+  1,
+  '#46a06d',
+  2,
+  '#8db548',
+  3,
+  '#d2ad42',
+  4,
+  '#f07f45',
+  5,
+  '#d85b52',
+  '#f07f45',
+]
+
+const INTERACTIVE_LAYERS = [
+  'pokelid-fill',
+  'pokelid-score-label',
+  'pokelid-score-active',
+] as const
 
 type MapPaneProps = {
   activeId: string | null
@@ -76,26 +104,64 @@ export function MapPane({
           source: 'pokelids',
           paint: {
             'circle-radius': 4.6,
-            'circle-color': '#f07f45',
+            'circle-color': MARKER_COLOR_EXPRESSION,
             'circle-stroke-color': '#8c3517',
             'circle-stroke-width': 1.2,
           },
         })
 
-        map?.on('click', 'pokelid-fill', (event) => {
-          const manholeNo = event.features?.[0]?.properties?.manholeNo
-          if (typeof manholeNo === 'string') {
-            onSelect(manholeNo)
-          }
+        map?.addLayer({
+          id: 'pokelid-score-label',
+          type: 'symbol',
+          source: 'pokelids',
+          minzoom: 8.5,
+          layout: {
+            'text-field': ['to-string', ['get', 'accessibilityScore']],
+            'text-size': 10.5,
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+          },
+          paint: {
+            'text-color': '#1d2b33',
+            'text-halo-color': 'rgba(255, 255, 255, 0.9)',
+            'text-halo-width': 1.6,
+          },
         })
 
-        map?.on('mouseenter', 'pokelid-fill', () => {
-          map?.getCanvas().style.setProperty('cursor', 'pointer')
+        map?.addLayer({
+          id: 'pokelid-score-active',
+          type: 'symbol',
+          source: 'pokelids',
+          filter: ['==', ['get', 'manholeNo'], ''],
+          layout: {
+            'text-field': ['to-string', ['get', 'accessibilityScore']],
+            'text-size': 12,
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+          },
+          paint: {
+            'text-color': '#1d2b33',
+            'text-halo-color': 'rgba(255, 255, 255, 0.98)',
+            'text-halo-width': 2,
+          },
         })
 
-        map?.on('mouseleave', 'pokelid-fill', () => {
-          map?.getCanvas().style.removeProperty('cursor')
-        })
+        for (const layerId of INTERACTIVE_LAYERS) {
+          map?.on('click', layerId, (event) => {
+            const manholeNo = event.features?.[0]?.properties?.manholeNo
+            if (typeof manholeNo === 'string') {
+              onSelect(manholeNo)
+            }
+          })
+
+          map?.on('mouseenter', layerId, () => {
+            map?.getCanvas().style.setProperty('cursor', 'pointer')
+          })
+
+          map?.on('mouseleave', layerId, () => {
+            map?.getCanvas().style.removeProperty('cursor')
+          })
+        }
 
         setIsMapReady(true)
       })
@@ -134,6 +200,8 @@ export function MapPane({
           coordinates: [lid.lng, lid.lat],
         },
         properties: {
+          accessibilityScore: lid.accessibility.score,
+          accessibilityBand: lid.accessibility.band,
           manholeNo: lid.manholeNo,
           name: lid.name,
         },
@@ -181,6 +249,12 @@ export function MapPane({
       7.2,
       4.6,
     ])
+
+    map.setFilter('pokelid-score-active', [
+      '==',
+      ['get', 'manholeNo'],
+      activeId ?? '',
+    ])
   }, [activeId, isMapReady])
 
   useEffect(() => {
@@ -211,23 +285,67 @@ export function MapPane({
       maxWidth: '320px',
     })
       .setLngLat([lid.lng, lid.lat])
-      .setHTML(`
+      .setHTML(buildPopupHtml(lid))
+      .addTo(map)
+  }, [activeId, isMapReady, lids])
+
+  return (
+    <div className="map-frame">
+      <div className="map-canvas" ref={containerRef} />
+      <aside className="map-legend" aria-label="可達性難度の凡例">
+        <p className="map-legend-kicker">Access</p>
+        <strong>可達性の目安</strong>
+        <p>
+          駅・バス・港・空港と、周辺のふたの回りやすさから 1 〜 5 で表示します。
+        </p>
+        <div className="map-legend-scale">
+          {ACCESSIBILITY_VISUALS.map((entry) => (
+            <div className="map-legend-item" key={entry.score}>
+              <span
+                className="map-legend-dot"
+                style={{ '--score-color': entry.color } as CSSProperties}
+              >
+                {entry.score}
+              </span>
+              <span>{entry.label}</span>
+            </div>
+          ))}
+        </div>
+        <small>数値は選択中か、地図を拡大したときに表示されます。</small>
+      </aside>
+    </div>
+  )
+}
+
+function buildPopupHtml(lid: PokeLidRecord) {
+  const visual = getAccessibilityVisual(lid.accessibility.score)
+  const reasonTags = lid.accessibility.reasons
+    .map(
+      (reason) =>
+        `<span class="map-popup-tag">${getAccessibilityReasonLabel(reason)}</span>`,
+    )
+    .join('')
+
+  return `
         <article class="map-popup">
           <img src="${lid.imageUrl}" alt="${lid.name}" />
           <div class="map-popup-copy">
             <p class="map-popup-meta">${lid.prefName}</p>
             <strong>${lid.name}</strong>
+            <div class="map-popup-accessibility">
+              <span class="map-popup-score" style="--score-color: ${visual.color}">
+                難度 ${lid.accessibility.score} / 5
+              </span>
+              <span class="map-popup-band">${getAccessibilityBandLabel(lid.accessibility.band)}</span>
+            </div>
+            ${reasonTags ? `<div class="map-popup-reasons">${reasonTags}</div>` : ''}
             <div class="map-popup-actions">
               <a class="popup-action" href="${buildGoogleMapsLink(lid.lat, lid.lng)}" target="_blank" rel="noreferrer">Googleマップで開く</a>
               <a class="popup-action popup-action-primary" href="${buildGoogleNavigationLink(lid.lat, lid.lng)}" target="_blank" rel="noreferrer">Googleでナビ</a>
             </div>
           </div>
         </article>
-      `)
-      .addTo(map)
-  }, [activeId, isMapReady, lids])
-
-  return <div className="map-canvas" ref={containerRef} />
+      `
 }
 
 function getBoundsForLids(lids: PokeLidRecord[]): LngLatBoundsLike | null {
