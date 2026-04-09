@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import { MapPane } from './components/MapPane.tsx'
 import {
   areaLabel,
@@ -9,6 +9,7 @@ import {
   queryStateToSearchParams,
   updateLocationSearch,
 } from './lib/app-helpers.ts'
+import { ACCESSIBILITY_VISUALS } from './lib/accessibility.ts'
 import type { PokemonEntry, PokeLidRecord, QueryState } from './types.ts'
 
 type DataState =
@@ -319,12 +320,36 @@ function App() {
           className={classNames('map-column', mobilePane === 'list' && 'mobile-hidden')}
         >
           <section className="panel map-panel">
-            <div className="panel-heading section-heading">
-              <div>
+            <div className="panel-heading map-heading">
+              <div className="map-heading-copy">
                 <p className="panel-kicker">Atlas</p>
                 <h2>地図</h2>
+                <p>日本各地のポケふた位置と行きやすさを、ひと目で確認できます。</p>
               </div>
-              <p>日本各地のポケふたの位置を地図で確認できます。</p>
+              <div className="map-access-rail" aria-label="行きやすさの目安">
+                <div className="map-access-header">
+                  <span className="map-access-kicker">ACCESS</span>
+                  <span className="map-access-caption">行きやすさ</span>
+                </div>
+                <div className="map-access-scale">
+                  {ACCESSIBILITY_VISUALS.map((entry) => (
+                    <div
+                      aria-label={`${entry.score} ${entry.label}`}
+                      className="map-access-item"
+                      key={entry.score}
+                      title={entry.label}
+                    >
+                      <span
+                        className="map-access-dot"
+                        style={{ '--score-color': entry.color } as CSSProperties}
+                      >
+                        {entry.score}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <p className="map-access-note">1 = 行きやすい、5 = 遠征向け</p>
+              </div>
             </div>
             <MapPane
               activeId={activeLid?.manholeNo ?? null}

@@ -565,11 +565,98 @@ a:focus-visible {
 }
 
 .map-panel {
-  padding-bottom: 14px;
+  padding-bottom: 16px;
 }
 
-.map-frame {
-  position: relative;
+.map-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 360px);
+  gap: 18px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+
+.map-heading-copy {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.map-heading-copy p:last-child {
+  max-width: 42ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.map-access-rail {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  padding: 14px 16px;
+  border-radius: 22px;
+  border: 1px solid rgba(72, 89, 94, 0.12);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(251, 249, 244, 0.9));
+  box-shadow: var(--shadow-soft);
+}
+
+.map-access-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.map-access-kicker {
+  color: var(--accent-deep);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.map-access-caption {
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.map-access-scale {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+
+.map-access-item {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.map-access-dot,
+.map-popup-score {
+  --score-color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--score-color) 18%, white);
+  border: 1px solid color-mix(in srgb, var(--score-color) 34%, white);
+  color: color-mix(in srgb, var(--score-color) 58%, #3e2419);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.map-access-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
 }
 
 .map-canvas {
@@ -579,69 +666,8 @@ a:focus-visible {
   border: 1px solid rgba(86, 97, 102, 0.14);
 }
 
-.map-legend {
-  position: absolute;
-  bottom: 18px;
-  left: 18px;
-  display: grid;
-  gap: 10px;
-  width: min(280px, calc(100% - 36px));
-  padding: 16px 18px;
-  border-radius: 22px;
-  border: 1px solid rgba(72, 89, 94, 0.14);
-  background: rgba(252, 250, 246, 0.9);
-  backdrop-filter: blur(14px);
-  box-shadow: var(--shadow-soft);
-}
-
-.map-legend-kicker {
-  margin: 0;
-  color: var(--accent-deep);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-}
-
-.map-legend strong,
-.map-legend p,
-.map-legend small {
-  margin: 0;
-}
-
-.map-legend p,
-.map-legend small {
-  color: var(--muted);
-}
-
-.map-legend-scale {
-  display: grid;
-  gap: 8px;
-}
-
-.map-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--text);
-  font-size: 0.92rem;
-}
-
-.map-legend-dot,
-.map-popup-score {
-  --score-color: var(--accent);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 34px;
-  min-height: 34px;
-  padding: 0 10px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--score-color) 18%, white);
-  border: 1px solid color-mix(in srgb, var(--score-color) 34%, white);
-  color: color-mix(in srgb, var(--score-color) 58%, #3e2419);
-  font-size: 0.82rem;
-  font-weight: 700;
+.map-frame {
+  position: relative;
 }
 
 .map-popup {
@@ -827,6 +853,14 @@ a:focus-visible {
   .count-pill {
     text-align: left;
   }
+
+  .map-heading {
+    grid-template-columns: 1fr;
+  }
+
+  .map-access-rail {
+    width: 100%;
+  }
 }
 
 @media (max-width: 880px) {
@@ -850,14 +884,17 @@ a:focus-visible {
     max-height: none;
   }
 
-  .map-canvas {
-    min-height: 54vh;
+  .map-heading {
+    gap: 14px;
+    margin-bottom: 14px;
   }
 
-  .map-legend {
-    position: static;
-    width: 100%;
-    margin-top: 14px;
+  .map-access-rail {
+    padding: 12px 14px;
+  }
+
+  .map-canvas {
+    min-height: 54vh;
   }
 
   .filter-panel,
@@ -878,5 +915,14 @@ a:focus-visible {
   .map-popup-actions {
     display: grid;
     grid-template-columns: 1fr;
+  }
+
+  .map-access-scale {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .map-access-note {
+    font-size: 0.76rem;
   }
 }

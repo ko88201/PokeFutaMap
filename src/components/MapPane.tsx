@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import maplibregl, { GeoJSONSource, Map } from 'maplibre-gl'
 import type { ExpressionSpecification, LngLatBoundsLike } from 'maplibre-gl'
 import {
-  ACCESSIBILITY_VISUALS,
   getAccessibilityBandLabel,
   getAccessibilityReasonLabel,
   getAccessibilityVisual,
@@ -304,27 +303,6 @@ export function MapPane({
   return (
     <div className="map-frame">
       <div className="map-canvas" ref={containerRef} />
-      <aside className="map-legend" aria-label="可達性難度の凡例">
-        <p className="map-legend-kicker">Access</p>
-        <strong>可達性の目安</strong>
-        <p>
-          駅・バス・港・空港に加えて、国際線空港・新幹線・主要都市からの入りやすさも 1 〜 5 に反映します。
-        </p>
-        <div className="map-legend-scale">
-          {ACCESSIBILITY_VISUALS.map((entry) => (
-            <div className="map-legend-item" key={entry.score}>
-              <span
-                className="map-legend-dot"
-                style={{ '--score-color': entry.color } as CSSProperties}
-              >
-                {entry.score}
-              </span>
-              <span>{entry.label}</span>
-            </div>
-          ))}
-        </div>
-        <small>数値は選択中か、地図を拡大したときに表示されます。</small>
-      </aside>
     </div>
   )
 }
