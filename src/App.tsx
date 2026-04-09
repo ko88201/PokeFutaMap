@@ -2,8 +2,6 @@ import { useEffect, useState, type CSSProperties } from 'react'
 import { MapPane } from './components/MapPane.tsx'
 import {
   areaLabel,
-  buildGoogleMapsLink,
-  buildGoogleNavigationLink,
   classNames,
   getInitialQueryState,
   queryStateToSearchParams,
@@ -357,60 +355,6 @@ function App() {
               onSelect={setActiveId}
               visibleLids={visibleLids}
             />
-          </section>
-
-          <section className="panel detail-panel">
-            <div className="panel-heading section-heading">
-              <div>
-                <p className="panel-kicker">Spotlight</p>
-                <h2>選択中のポケふた</h2>
-              </div>
-              <p>選択したポケふたの画像と場所を確認できます。</p>
-            </div>
-            {activeLid ? (
-              <div className="detail-grid">
-                <img alt={activeLid.name} className="detail-image" src={activeLid.imageUrl} />
-                <div className="detail-copy">
-                  <p className="detail-meta">
-                    {activeLid.prefName} · {areaLabel(activeLid.area)} · ポケふた #
-                    {activeLid.manholeNo}
-                  </p>
-                  <div className="detail-title">
-                    <h3>{activeLid.name}</h3>
-                    {activeLid.isNew ? <span className="badge">新着</span> : null}
-                  </div>
-                  <p className="detail-pokemon">
-                    {activeLid.pokemon.map(formatPokemonLabel).join(' · ')}
-                  </p>
-                  <div className="detail-links">
-                    <a className="detail-action" href={activeLid.sourceUrl} rel="noreferrer" target="_blank">
-                      公式ページ
-                    </a>
-                    <a
-                      className="detail-action"
-                      href={buildGoogleMapsLink(activeLid.lat, activeLid.lng)}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      Googleマップで開く
-                    </a>
-                    <a
-                      className="detail-action detail-action-primary"
-                      href={buildGoogleNavigationLink(activeLid.lat, activeLid.lng)}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      Googleでナビ
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="empty-state">
-                <strong>ポケふたを選ぶと詳細を表示します。</strong>
-                <p>一覧でも地図でも、どちらからでも選択できます。</p>
-              </div>
-            )}
           </section>
         </section>
       </section>

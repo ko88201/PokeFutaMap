@@ -112,7 +112,6 @@ a:focus-visible {
 }
 
 .panel-heading p,
-.detail-meta,
 .lid-copy span,
 .empty-state p {
   color: var(--muted);
@@ -163,7 +162,6 @@ a:focus-visible {
 .pill-toggle:focus-visible,
 .toggle-switch:focus-visible,
 .secondary-action:focus-visible,
-.detail-action:focus-visible,
 .popup-action:focus-visible {
   box-shadow:
     0 0 0 4px rgba(240, 127, 69, 0.14),
@@ -195,8 +193,7 @@ a:focus-visible {
   margin-bottom: 22px;
 }
 
-.panel-heading h2,
-.detail-title h3 {
+.panel-heading h2 {
   margin: 0;
   font: 400 clamp(1.42rem, 2vw, 1.72rem) / 1.05 var(--serif);
   letter-spacing: -0.03em;
@@ -241,8 +238,7 @@ a:focus-visible {
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(250, 247, 242, 0.88));
 }
 
-.results-panel,
-.detail-panel {
+.results-panel {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(251, 252, 248, 0.82));
 }
@@ -501,8 +497,7 @@ a:focus-visible {
     linear-gradient(180deg, rgba(255, 248, 243, 0.98), rgba(254, 249, 246, 0.9));
 }
 
-.lid-card img,
-.detail-image {
+.lid-card img {
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
@@ -521,14 +516,11 @@ a:focus-visible {
   letter-spacing: -0.03em;
 }
 
-.lid-copy p,
-.detail-pokemon {
+.lid-copy p {
   margin: 0;
 }
 
-.lid-meta-row,
-.detail-title,
-.detail-links {
+.lid-meta-row {
   display: flex;
   gap: 10px;
   align-items: center;
@@ -750,73 +742,10 @@ a:focus-visible {
   border-color: rgba(240, 127, 69, 0.16);
 }
 
-.detail-grid {
-  display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
-  gap: 26px;
-  align-items: start;
-}
-
-.detail-copy {
-  display: grid;
-  gap: 14px;
-  align-content: start;
-}
-
-.detail-image {
-  box-shadow: 0 20px 34px rgba(77, 73, 61, 0.14);
-}
-
-.detail-meta {
-  width: fit-content;
-  margin: 0;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(240, 127, 69, 0.08);
-  border: 1px solid rgba(240, 127, 69, 0.12);
-  color: var(--muted);
-  font-size: 0.84rem;
-}
-
-.detail-pokemon {
-  font-size: 1rem;
-}
-
-.detail-links {
-  gap: 12px;
-  margin-top: 4px;
-}
-
-.detail-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 42px;
-  padding: 10px 14px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(72, 89, 94, 0.12);
-  color: var(--muted);
-  text-decoration: none;
-  transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    box-shadow 180ms ease,
-    color 180ms ease,
-    background 180ms ease;
-}
-
-.detail-action:hover,
 .popup-action:hover {
   transform: translateY(-1px);
   border-color: rgba(240, 127, 69, 0.24);
   box-shadow: 0 12px 24px rgba(77, 73, 61, 0.08);
-}
-
-.detail-action-primary {
-  background: rgba(240, 127, 69, 0.14);
-  color: var(--accent-deep);
-  border-color: rgba(240, 127, 69, 0.18);
 }
 
 .empty-state,
@@ -831,8 +760,7 @@ a:focus-visible {
 }
 
 @media (max-width: 1100px) {
-  .workspace,
-  .detail-grid {
+  .workspace {
     grid-template-columns: 1fr;
   }
 
@@ -898,8 +826,7 @@ a:focus-visible {
   }
 
   .filter-panel,
-  .results-panel,
-  .detail-panel {
+  .results-panel {
     padding: 20px;
   }
 
@@ -911,7 +838,6 @@ a:focus-visible {
     gap: 14px;
   }
 
-  .detail-links,
   .map-popup-actions {
     display: grid;
     grid-template-columns: 1fr;
