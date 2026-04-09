@@ -31,8 +31,6 @@ const MARKER_COLOR_EXPRESSION: ExpressionSpecification = [
 
 const INTERACTIVE_LAYERS = [
   'pokelid-fill',
-  'pokelid-score-label',
-  'pokelid-score-active',
 ] as const
 
 type MapPaneProps = {
@@ -91,7 +89,7 @@ export function MapPane({
           type: 'circle',
           source: 'pokelids',
           paint: {
-            'circle-radius': 7,
+            'circle-radius': 4.8,
             'circle-color': '#ffffff',
             'circle-opacity': 0.96,
           },
@@ -104,44 +102,9 @@ export function MapPane({
           paint: {
             'circle-radius': 4.6,
             'circle-color': MARKER_COLOR_EXPRESSION,
-            'circle-stroke-color': '#8c3517',
-            'circle-stroke-width': 1.2,
-          },
-        })
-
-        map?.addLayer({
-          id: 'pokelid-score-label',
-          type: 'symbol',
-          source: 'pokelids',
-          minzoom: 8.5,
-          layout: {
-            'text-field': ['to-string', ['get', 'accessibilityScore']],
-            'text-size': 10.5,
-            'text-allow-overlap': true,
-            'text-ignore-placement': true,
-          },
-          paint: {
-            'text-color': '#1d2b33',
-            'text-halo-color': 'rgba(255, 255, 255, 0.9)',
-            'text-halo-width': 1.6,
-          },
-        })
-
-        map?.addLayer({
-          id: 'pokelid-score-active',
-          type: 'symbol',
-          source: 'pokelids',
-          filter: ['==', ['get', 'manholeNo'], ''],
-          layout: {
-            'text-field': ['to-string', ['get', 'accessibilityScore']],
-            'text-size': 12,
-            'text-allow-overlap': true,
-            'text-ignore-placement': true,
-          },
-          paint: {
-            'text-color': '#1d2b33',
-            'text-halo-color': 'rgba(255, 255, 255, 0.98)',
-            'text-halo-width': 2,
+            'circle-opacity': 0.96,
+            'circle-stroke-color': 'rgba(255, 255, 255, 0.88)',
+            'circle-stroke-width': 0.2,
           },
         })
 
@@ -250,8 +213,8 @@ export function MapPane({
     map.setPaintProperty('pokelid-outline', 'circle-radius', [
       'case',
       ['==', ['get', 'manholeNo'], activeId ?? ''],
-      10,
-      7,
+      7.4,
+      4.8,
     ])
 
     map.setPaintProperty('pokelid-fill', 'circle-radius', [
@@ -259,12 +222,6 @@ export function MapPane({
       ['==', ['get', 'manholeNo'], activeId ?? ''],
       7.2,
       4.6,
-    ])
-
-    map.setFilter('pokelid-score-active', [
-      '==',
-      ['get', 'manholeNo'],
-      activeId ?? '',
     ])
   }, [activeId, isMapReady])
 
