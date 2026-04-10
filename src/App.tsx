@@ -303,12 +303,6 @@ function App() {
       />
 
       <header className="topbar">
-        <div className="brand-card">
-          <p className="eyebrow">Reachability Atlas</p>
-          <h1>PokeFutaMap</h1>
-          <p>ポケふたを、移動しやすさごとに眺めるモバイル地図。</p>
-        </div>
-
         <div className="topbar-actions">
           <ControlButton
             active={panelOpen}
@@ -330,31 +324,13 @@ function App() {
         </div>
       </header>
 
-      <section className="legend-card" aria-label="行きやすさの凡例">
-        <div className="legend-heading">
-          <p className="eyebrow">Primary Layer</p>
-          <strong>Reachability</strong>
-        </div>
-        <div className="legend-scale">
-          {ACCESSIBILITY_VISUALS.map((entry) => (
-            <div className="legend-item" key={entry.score}>
-              <span
-                className="legend-dot"
-                style={{ '--score-color': entry.color } as CSSProperties}
-              >
-                {entry.score}
-              </span>
-              <span>{entry.label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {locationStatusCopy ? (
         <div aria-live="polite" className="status-banner">
           {locationStatusCopy}
         </div>
       ) : null}
+
+      <AttributionDisclosure />
 
       <section className={classNames('sheet', panelOpen && 'open')}>
         <div className="sheet-summary">
@@ -390,6 +366,26 @@ function App() {
               label="スコア"
               value={query.access ? getAccessFilterLabel(query.access) : '1-5'}
             />
+          </div>
+
+          <div className="summary-legend" aria-label="行きやすさの凡例">
+            <div className="summary-legend-header">
+              <p className="eyebrow">Primary Layer</p>
+              <strong>Reachability</strong>
+            </div>
+            <div className="summary-legend-scale">
+              {ACCESSIBILITY_VISUALS.map((entry) => (
+                <div className="summary-legend-item" key={entry.score}>
+                  <span
+                    className="legend-dot"
+                    style={{ '--score-color': entry.color } as CSSProperties}
+                  >
+                    {entry.score}
+                  </span>
+                  <span>{entry.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="summary-chip-row">
@@ -808,6 +804,16 @@ function DetailCard({
         </div>
       </div>
     </article>
+  )
+}
+
+const AttributionDisclosure = () => {
+  return (
+    <div aria-label="地圖資料提供元" className="attribution-mini" role="note">
+      <div className="attribution-line" title="OpenFreeMap · © OpenMapTiles · © OpenStreetMap contributors">
+        OpenFreeMap · © OpenMapTiles · © OpenStreetMap contributors
+      </div>
+    </div>
   )
 }
 

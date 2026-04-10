@@ -77,8 +77,10 @@ export function MapPane({
         }
 
         map = new maplibregl.Map({
+          attributionControl: false,
           center: [137.95, 37.5],
           container: containerRef.current,
+          maplibreLogo: false,
           style,
           zoom: 4.5,
         })

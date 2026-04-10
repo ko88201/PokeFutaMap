@@ -203,7 +203,7 @@ select:focus-visible {
   z-index: 5;
   inset: 0 0 auto;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
   align-items: flex-start;
   padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px 0;
@@ -212,30 +212,6 @@ select:focus-visible {
 
 .topbar > * {
   pointer-events: auto;
-}
-
-.brand-card {
-  max-width: min(390px, calc(100vw - 32px));
-  padding: 16px 18px 18px;
-  border: 1px solid var(--panel-line);
-  border-radius: 28px;
-  background: var(--panel);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
-  animation: rise-in 640ms ease both;
-}
-
-.brand-card h1 {
-  margin: 8px 0 4px;
-  font: 700 clamp(1.88rem, 6vw, 3.6rem) / 0.92 var(--display);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.brand-card p:last-child {
-  margin: 0;
-  color: var(--muted);
-  max-width: 28ch;
 }
 
 .topbar-actions {
@@ -284,41 +260,35 @@ select:focus-visible {
   height: 100%;
 }
 
-.legend-card {
-  position: absolute;
-  z-index: 4;
-  top: calc(env(safe-area-inset-top, 0px) + 134px);
-  right: 16px;
-  width: min(280px, calc(100vw - 32px));
-  padding: 14px 16px;
-  border: 1px solid var(--panel-line);
-  border-radius: 24px;
-  background: rgba(248, 244, 235, 0.78);
-  box-shadow: var(--shadow-soft);
-  backdrop-filter: blur(18px);
-  animation: rise-in 720ms ease both;
+.summary-legend {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 14px;
+  border: 1px solid rgba(19, 33, 41, 0.08);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.48);
 }
 
-.legend-heading {
+.summary-legend-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
 }
 
-.legend-heading strong {
+.summary-legend-header strong {
   font: 700 0.96rem/1 var(--display);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.legend-scale {
+.summary-legend-scale {
   display: grid;
   gap: 10px;
 }
 
-.legend-item {
+.summary-legend-item {
   display: grid;
   grid-template-columns: 32px 1fr;
   gap: 10px;
@@ -342,7 +312,7 @@ select:focus-visible {
 .status-banner {
   position: absolute;
   z-index: 5;
-  top: calc(env(safe-area-inset-top, 0px) + 152px);
+  top: calc(env(safe-area-inset-top, 0px) + 82px);
   left: 16px;
   right: 128px;
   max-width: 480px;
@@ -353,6 +323,34 @@ select:focus-visible {
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(16px);
   color: var(--muted);
+}
+
+.attribution-mini {
+  position: absolute;
+  z-index: 5;
+  right: 12px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 88px);
+  max-width: min(320px, calc(100vw - 24px));
+  pointer-events: none;
+}
+
+.attribution-line {
+  display: block;
+  overflow: hidden;
+  max-width: 100%;
+  padding: 5px 10px;
+  border: 1px solid rgba(19, 33, 41, 0.08);
+  border-radius: 999px;
+  background: rgba(247, 243, 236, 0.28);
+  color: rgba(19, 33, 41, 0.4);
+  backdrop-filter: blur(12px) saturate(0.88);
+  box-shadow: 0 6px 16px rgba(19, 33, 41, 0.035);
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.62rem;
+  line-height: 1;
+  letter-spacing: 0.015em;
 }
 
 .sheet {
@@ -931,9 +929,8 @@ select:focus-visible {
 .toggle-card,
 .result-card,
 .detail-actions a,
-.brand-card,
-.legend-card,
 .status-banner,
+.attribution-line,
 .sheet,
 .summary-spotlight,
 .metric-card,
@@ -992,14 +989,8 @@ select:focus-visible {
     padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px 0;
   }
 
-  .legend-card {
-    top: calc(env(safe-area-inset-top, 0px) + 178px);
-    right: 20px;
-    width: 292px;
-  }
-
   .status-banner {
-    top: calc(env(safe-area-inset-top, 0px) + 156px);
+    top: calc(env(safe-area-inset-top, 0px) + 92px);
     left: 20px;
     right: auto;
     max-width: 420px;
@@ -1013,6 +1004,11 @@ select:focus-visible {
     width: min(420px, calc(100vw - 40px));
     max-height: none;
     grid-template-rows: auto 1fr;
+  }
+
+  .attribution-mini {
+    right: 20px;
+    bottom: 16px;
   }
 
   .sheet:not(.open) {
@@ -1049,10 +1045,6 @@ select:focus-visible {
 }
 
 @media (max-width: 979px) {
-  .topbar {
-    flex-direction: column;
-  }
-
   .topbar-actions {
     width: 100%;
     justify-content: space-between;
@@ -1063,18 +1055,14 @@ select:focus-visible {
     padding: 0 12px;
   }
 
-  .legend-card {
-    top: auto;
-    right: 12px;
+  .status-banner {
+    top: calc(env(safe-area-inset-top, 0px) + 82px);
     left: 12px;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 214px);
-    width: auto;
+    right: 12px;
   }
 
-  .status-banner {
-    top: calc(env(safe-area-inset-top, 0px) + 152px);
-    left: 12px;
-    right: 12px;
+  .attribution-mini {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 214px);
   }
 }
 
@@ -1113,7 +1101,7 @@ select:focus-visible {
     grid-template-columns: 1fr;
   }
 
-  .legend-item {
+  .summary-legend-item {
     grid-template-columns: 28px 1fr;
     font-size: 0.86rem;
   }
@@ -1126,6 +1114,12 @@ select:focus-visible {
   .maplibregl-ctrl-top-right {
     top: calc(env(safe-area-inset-top, 0px) + 194px);
     right: 12px;
+  }
+
+  .attribution-mini {
+    right: 10px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 206px);
+    max-width: min(272px, calc(100vw - 20px));
   }
 }
 
