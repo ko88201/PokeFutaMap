@@ -85,31 +85,6 @@ export function MapPane({
           zoom: 4.5,
         })
 
-        map.addControl(
-          new maplibregl.NavigationControl({
-            showCompass: true,
-            showZoom: false,
-            visualizePitch: true,
-          }),
-          'bottom-right',
-        )
-
-        const compassButton = map
-          .getContainer()
-          .querySelector('.maplibregl-ctrl-compass') as HTMLButtonElement | null
-        const compassIcon = compassButton?.querySelector('.maplibregl-ctrl-icon')
-
-        if (compassButton) {
-          const controlLabel = '地図の向きと角度を調整'
-          compassButton.classList.add('map-gyro-button')
-          compassButton.title = controlLabel
-          compassButton.setAttribute('aria-label', controlLabel)
-        }
-
-        if (compassIcon) {
-          compassIcon.classList.add('map-gyro-icon')
-        }
-
         map.on('load', () => {
           if (cancelled || !map) {
             return
@@ -317,7 +292,7 @@ export function MapPane({
       return
     }
 
-    fitLids(map, visibleLids.length > 0 ? visibleLids : allLids, 760)
+    fitLids(map, visibleLids.length > 0 ? visibleLids : allLids, 760, true)
   }, [allLids, isMapReady, resetSignal, visibleLids])
 
   useEffect(() => {
@@ -378,13 +353,19 @@ function buildUserLocationCollection(userLocation: UserLocation | null): Feature
   }
 }
 
-function fitLids(map: Map, lids: PokeLidRecord[], duration: number) {
+function fitLids(
+  map: Map,
+  lids: PokeLidRecord[],
+  duration: number,
+  resetOrientation: boolean = false,
+) {
   const bounds = getBoundsForLids(lids)
   if (!bounds) {
     return
   }
 
   map.fitBounds(bounds, {
+    ...(resetOrientation ? { bearing: 0, pitch: 0 } : {}),
     duration,
     maxZoom: 10.8,
     padding: getViewportPadding('fit'),
