@@ -10,6 +10,8 @@ export type AccessibilityBand =
   | 'hard'
   | 'remote'
 
+export type AccessFilter = '' | 'easy' | 'moderate' | 'remote'
+
 export type AccessibilityReason =
   | 'station_nearby'
   | 'bus_access'
@@ -65,8 +67,15 @@ export type PokeLidRecord = {
   sourceUrl: string
 }
 
+export type UserLocation = {
+  lat: number
+  lng: number
+}
+
 export type QueryState = {
   area: string
+  access: AccessFilter
+  keyword: string
   newOnly: boolean
   pokemon: string
   pref: string

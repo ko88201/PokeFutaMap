@@ -1,26 +1,37 @@
-import type { QueryState } from '../types.ts'
+import type { AccessFilter, QueryState } from '../types.ts'
+
+const ACCESS_FILTERS = new Set<AccessFilter>(['easy', 'moderate', 'remote'])
 
 export function getInitialQueryState(): QueryState {
   const params = new URLSearchParams(window.location.search)
-  const pref = params.get('pref') ?? ''
-  const area = params.get('area') ?? ''
-  const pokemon = params.get('pokemon') ?? ''
 
   return {
-    pref,
-    area: pref ? '' : area,
-    pokemon: pref || area ? '' : pokemon,
+    area: params.get('area') ?? '',
+    access: parseAccessFilter(params.get('access')),
+    keyword: params.get('q') ?? '',
     newOnly: params.get('new') === '1',
+    pokemon: params.get('pokemon') ?? '',
+    pref: params.get('pref') ?? '',
   }
 }
 
-export function queryStateToSearchParams(query: QueryState) {
+export function getInitialNearbyMode() {
+  return new URLSearchParams(window.location.search).get('nearby') === '1'
+}
+
+export function queryStateToSearchParams(
+  query: QueryState,
+  options: { nearby?: boolean } = {},
+) {
   const params = new URLSearchParams()
 
   if (query.pref) params.set('pref', query.pref)
   if (query.area) params.set('area', query.area)
   if (query.pokemon) params.set('pokemon', query.pokemon)
+  if (query.keyword) params.set('q', query.keyword)
+  if (query.access) params.set('access', query.access)
   if (query.newOnly) params.set('new', '1')
+  if (options.nearby) params.set('nearby', '1')
 
   return params
 }
@@ -65,4 +76,12 @@ export function buildGoogleMapsLink(lat: number, lng: number) {
 
 export function classNames(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(' ')
+}
+
+function parseAccessFilter(value: string | null): AccessFilter {
+  if (value && ACCESS_FILTERS.has(value as AccessFilter)) {
+    return value as AccessFilter
+  }
+
+  return ''
 }
