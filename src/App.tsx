@@ -176,7 +176,6 @@ function App() {
     null
   const summaryLid = activeLid ?? (nearbyMode ? visibleLids[0] ?? null : null)
   const filterTags = buildFilterTags(query, nearbyMode)
-  const locationStatusCopy = getLocationStatusCopy(locationStatus, nearbyMode)
 
   useEffect(() => {
     if (!activeId) {
@@ -323,12 +322,6 @@ function App() {
           </ControlButton>
         </div>
       </header>
-
-      {locationStatusCopy ? (
-        <div aria-live="polite" className="status-banner">
-          {locationStatusCopy}
-        </div>
-      ) : null}
 
       <AttributionDisclosure />
 
@@ -990,30 +983,6 @@ function matchesAccessFilter(score: number, access: Exclude<AccessFilter, ''>) {
 
 function getAccessFilterLabel(access: Exclude<AccessFilter, ''>) {
   return ACCESS_FILTER_OPTIONS.find((option) => option.value === access)?.label ?? access
-}
-
-function getLocationStatusCopy(status: LocationStatus, nearbyMode: boolean) {
-  if (status === 'locating') {
-    return '現在地を確認しています…'
-  }
-
-  if (status === 'denied') {
-    return '位置情報が許可されなかったため、通常の地図表示に戻しています。'
-  }
-
-  if (status === 'unsupported') {
-    return 'このブラウザでは現在地取得を利用できません。'
-  }
-
-  if (status === 'error') {
-    return '現在地を取得できませんでした。通信状況やブラウザ設定をご確認ください。'
-  }
-
-  if (status === 'ready' && nearbyMode) {
-    return '現在地から近い順に並べています。'
-  }
-
-  return null
 }
 
 function requestCurrentLocation({

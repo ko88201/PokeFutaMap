@@ -309,22 +309,6 @@ select:focus-visible {
   box-shadow: 0 10px 18px rgba(19, 33, 41, 0.16);
 }
 
-.status-banner {
-  position: absolute;
-  z-index: 5;
-  top: calc(env(safe-area-inset-top, 0px) + 82px);
-  left: 16px;
-  right: 128px;
-  max-width: 480px;
-  padding: 12px 14px;
-  border: 1px solid rgba(19, 33, 41, 0.12);
-  border-radius: 18px;
-  background: rgba(250, 247, 240, 0.92);
-  box-shadow: var(--shadow-soft);
-  backdrop-filter: blur(16px);
-  color: var(--muted);
-}
-
 .attribution-mini {
   position: absolute;
   z-index: 5;
@@ -929,7 +913,6 @@ select:focus-visible {
 .toggle-card,
 .result-card,
 .detail-actions a,
-.status-banner,
 .attribution-line,
 .sheet,
 .summary-spotlight,
@@ -989,13 +972,6 @@ select:focus-visible {
     padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px 0;
   }
 
-  .status-banner {
-    top: calc(env(safe-area-inset-top, 0px) + 92px);
-    left: 20px;
-    right: auto;
-    max-width: 420px;
-  }
-
   .sheet {
     top: calc(env(safe-area-inset-top, 0px) + 112px);
     left: 20px;
@@ -1053,12 +1029,6 @@ select:focus-visible {
   .control-button {
     flex: 1 1 calc(33.33% - 6px);
     padding: 0 12px;
-  }
-
-  .status-banner {
-    top: calc(env(safe-area-inset-top, 0px) + 82px);
-    left: 12px;
-    right: 12px;
   }
 
   .attribution-mini {
