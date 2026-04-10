@@ -62,13 +62,38 @@ function App() {
   const [dataState, setDataState] = useState<DataState>({ status: 'loading' })
   const [query, setQuery] = useState<QueryState>(() => getInitialQueryState())
   const [activeId, setActiveId] = useState<string | null>(null)
-  const [panelOpen, setPanelOpen] = useState(() => window.innerWidth >= DESKTOP_BREAKPOINT)
+  const [isDesktopViewport, setIsDesktopViewport] = useState(
+    () => window.innerWidth >= DESKTOP_BREAKPOINT,
+  )
+  const [mainPanelOpen, setMainPanelOpen] = useState(
+    () => window.innerWidth >= DESKTOP_BREAKPOINT,
+  )
+  const [collectionOpen, setCollectionOpen] = useState(false)
   const [nearbyMode, setNearbyMode] = useState(() => getInitialNearbyMode())
   const [locationStatus, setLocationStatus] = useState<LocationStatus>('idle')
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null)
   const [resetSignal, setResetSignal] = useState(0)
   const [locateSignal, setLocateSignal] = useState(0)
   const hasTriedInitialNearbyRef = useRef(false)
+
+  useEffect(() => {
+    const handleResize = () => {
+      const nextIsDesktop = window.innerWidth >= DESKTOP_BREAKPOINT
+
+      setIsDesktopViewport((current) => {
+        if (current === nextIsDesktop) {
+          return current
+        }
+
+        setMainPanelOpen(nextIsDesktop)
+        setCollectionOpen(false)
+        return nextIsDesktop
+      })
+    }
+
+    window.addEventListener('resize', handleResize, { passive: true })
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -153,6 +178,7 @@ function App() {
     visibleLids.find((lid) => lid.manholeNo === activeId) ??
     readyLids.find((lid) => lid.manholeNo === activeId) ??
     null
+  const activeDistanceKm = activeLid ? distanceById.get(activeLid.manholeNo) ?? null : null
   const summaryLid = activeLid ?? (nearbyMode ? visibleLids[0] ?? null : null)
 
   useEffect(() => {
@@ -205,8 +231,26 @@ function App() {
     setResetSignal((value) => value + 1)
   }
 
-  function handlePanelToggle() {
-    setPanelOpen((open) => !open)
+  function handleMainPanelToggle() {
+    setMainPanelOpen((open) => {
+      const nextOpen = !open
+      if (!isDesktopViewport && nextOpen) {
+        setCollectionOpen(false)
+      }
+
+      return nextOpen
+    })
+  }
+
+  function handleCollectionToggle() {
+    setCollectionOpen((open) => {
+      const nextOpen = !open
+      if (!isDesktopViewport && nextOpen) {
+        setMainPanelOpen(false)
+      }
+
+      return nextOpen
+    })
   }
 
   function handleResetView() {
@@ -246,24 +290,13 @@ function App() {
   function handleListSelect(manholeNo: string) {
     setActiveId(manholeNo)
 
-    if (window.innerWidth < DESKTOP_BREAKPOINT) {
-      setPanelOpen(false)
-      return
+    if (!isDesktopViewport) {
+      setCollectionOpen(false)
     }
-
-    setPanelOpen(true)
   }
 
   function handleMapSelect(manholeNo: string | null) {
     setActiveId(manholeNo)
-
-    if (!manholeNo) {
-      return
-    }
-
-    if (window.innerWidth >= DESKTOP_BREAKPOINT) {
-      setPanelOpen(true)
-    }
   }
 
   return (
@@ -272,8 +305,19 @@ function App() {
         activeId={activeLid?.manholeNo ?? null}
         activeLid={activeLid}
         allLids={readyLids}
+        collectionOpen={collectionOpen}
         locateSignal={locateSignal}
+        mainPanelOpen={mainPanelOpen}
         onSelect={handleMapSelect}
+        popupContent={
+          activeLid ? (
+            <MapPopupCard
+              distanceKm={activeDistanceKm}
+              lid={activeLid}
+              onClose={() => setActiveId(null)}
+            />
+          ) : null
+        }
         resetSignal={resetSignal}
         userLocation={nearbyMode ? userLocation : null}
         visibleLids={visibleLids}
@@ -282,11 +326,18 @@ function App() {
       <header className="topbar">
         <div className="topbar-actions">
           <ControlButton
-            active={panelOpen}
+            active={mainPanelOpen}
             icon={<FilterIcon />}
-            onClick={handlePanelToggle}
+            onClick={handleMainPanelToggle}
           >
-            {panelOpen ? 'パネルを閉じる' : '検索と一覧'}
+            絞り込み
+          </ControlButton>
+          <ControlButton
+            active={collectionOpen}
+            icon={<CollectionIcon />}
+            onClick={handleCollectionToggle}
+          >
+            一覧
           </ControlButton>
           <ControlButton
             active={nearbyMode}
@@ -303,13 +354,20 @@ function App() {
 
       <AttributionDisclosure />
 
-      <section className={classNames('sheet', panelOpen && 'open')}>
+      <section
+        className={classNames(
+          'sheet',
+          'main-sheet',
+          mainPanelOpen && 'open',
+          collectionOpen && !isDesktopViewport && 'backgrounded',
+        )}
+      >
         <div className="sheet-summary">
           <button
-            aria-expanded={panelOpen}
-            aria-label={panelOpen ? 'パネルを折りたたむ' : 'パネルを展開する'}
+            aria-expanded={mainPanelOpen}
+            aria-label={mainPanelOpen ? 'パネルを折りたたむ' : 'パネルを展開する'}
             className="sheet-handle"
-            onClick={handlePanelToggle}
+            onClick={handleMainPanelToggle}
             type="button"
           >
             <span />
@@ -435,108 +493,22 @@ function App() {
                 </button>
               </div>
             </section>
-
-            {activeLid ? (
-              <section className="panel-section">
-                <div className="section-heading">
-                  <div>
-                    <p className="eyebrow">Selected</p>
-                    <h3>スポット詳細</h3>
-                  </div>
-                  <p>ナビや公式ページへ直接移動できます。</p>
-                </div>
-
-                <DetailCard
-                  distanceKm={distanceById.get(activeLid.manholeNo) ?? null}
-                  lid={activeLid}
-                />
-              </section>
-            ) : null}
-
-            <section className="panel-section">
-              <div className="section-heading">
-                <div>
-                  <p className="eyebrow">Collection</p>
-                  <h3>ポケふた一覧</h3>
-                </div>
-                <p>
-                  {nearbyMode && userLocation
-                    ? '現在地から近い順'
-                    : 'マップと連動する全スポット一覧'}
-                </p>
-              </div>
-
-              <div className="result-list">
-                {visibleLids.map((lid) => (
-                  <button
-                    aria-pressed={lid.manholeNo === activeLid?.manholeNo}
-                    className={classNames(
-                      'result-card',
-                      lid.manholeNo === activeLid?.manholeNo && 'active',
-                    )}
-                    key={lid.manholeNo}
-                    onClick={() => handleListSelect(lid.manholeNo)}
-                    type="button"
-                  >
-                    <div className="result-card-header">
-                      <div className="result-score">
-                        <span
-                          className="score-badge"
-                          style={
-                            {
-                              '--score-color':
-                                getAccessibilityVisual(lid.accessibility.score).color,
-                            } as CSSProperties
-                          }
-                        >
-                          {lid.accessibility.score}
-                        </span>
-                        <div>
-                          <strong>{lid.name}</strong>
-                          <p>
-                            {lid.prefName} · {areaLabel(lid.area)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="result-meta">
-                        {lid.isNew ? <span className="inline-badge">新着</span> : null}
-                        {nearbyMode && userLocation ? (
-                          <span className="distance-pill">
-                            {formatDistance(distanceById.get(lid.manholeNo) ?? null)}
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
-                    <p className="result-pokemon">
-                      {lid.pokemon.map(formatPokemonLabel).join(' · ')}
-                    </p>
-                    <div className="result-tags">
-                      <span className="band-pill">
-                        {getAccessibilityBandLabel(lid.accessibility.band)}
-                      </span>
-                      {lid.accessibility.reasons.slice(0, 2).map((reason) => (
-                        <span className="reason-pill" key={reason}>
-                          {getAccessibilityReasonLabel(reason)}
-                        </span>
-                      ))}
-                    </div>
-                  </button>
-                ))}
-
-                {visibleLids.length === 0 ? (
-                  <div className="empty-state">
-                    <strong>条件に合うポケふたが見つかりません。</strong>
-                    <p>キーワードや reachability 条件を少しゆるめてみてください。</p>
-                    <button className="ghost-action" onClick={resetFilters} type="button">
-                      すべて解除する
-                    </button>
-                  </div>
-                ) : null}
-              </div>
-            </section>
           </div>
         </div>
       </section>
+
+      <CollectionPanel
+        activeId={activeLid?.manholeNo ?? null}
+        distanceById={distanceById}
+        isDesktop={isDesktopViewport}
+        nearbyMode={nearbyMode}
+        open={collectionOpen}
+        onClose={() => setCollectionOpen(false)}
+        onSelect={handleListSelect}
+        resetFilters={resetFilters}
+        userLocation={userLocation}
+        visibleLids={visibleLids}
+      />
     </main>
   )
 }
@@ -593,6 +565,133 @@ function FilterSelect({
   )
 }
 
+function CollectionPanel({
+  activeId,
+  distanceById,
+  isDesktop,
+  nearbyMode,
+  open,
+  onClose,
+  onSelect,
+  resetFilters,
+  userLocation,
+  visibleLids,
+}: {
+  activeId: string | null
+  distanceById: Map<string, number>
+  isDesktop: boolean
+  nearbyMode: boolean
+  open: boolean
+  onClose: () => void
+  onSelect: (manholeNo: string) => void
+  resetFilters: () => void
+  userLocation: UserLocation | null
+  visibleLids: PokeLidRecord[]
+}) {
+  return (
+    <section
+      aria-hidden={!open}
+      className={classNames(
+        'collection-panel',
+        open && 'open',
+        isDesktop ? 'desktop' : 'mobile',
+        visibleLids.length === 0 && 'is-empty',
+      )}
+    >
+      <button
+        aria-label="一覧を閉じる"
+        className="collection-backdrop"
+        onClick={onClose}
+        type="button"
+      />
+      <div className="collection-surface">
+        <div className="collection-header">
+          <div>
+            <p className="eyebrow">Collection</p>
+            <h3>ポケふた一覧</h3>
+          </div>
+          <div className="collection-header-actions">
+            <span className="collection-count">{visibleLids.length} spots</span>
+            <button className="collection-close" onClick={onClose} type="button">
+              閉じる
+            </button>
+          </div>
+        </div>
+
+        <p className="collection-subtitle">
+          {nearbyMode && userLocation
+            ? '現在地から近い順に並んでいます。'
+            : '地図と同じ条件で絞り込まれた一覧です。'}
+        </p>
+
+        <div className="collection-scroll">
+          <div className="result-list">
+            {visibleLids.map((lid) => (
+              <button
+                aria-pressed={lid.manholeNo === activeId}
+                className={classNames('result-card', lid.manholeNo === activeId && 'active')}
+                key={lid.manholeNo}
+                onClick={() => onSelect(lid.manholeNo)}
+                type="button"
+              >
+                <div className="result-card-header">
+                  <div className="result-score">
+                    <span
+                      className="score-badge"
+                      style={
+                        {
+                          '--score-color': getAccessibilityVisual(lid.accessibility.score).color,
+                        } as CSSProperties
+                      }
+                    >
+                      {lid.accessibility.score}
+                    </span>
+                    <div>
+                      <strong>{lid.name}</strong>
+                      <p>
+                        {lid.prefName} · {areaLabel(lid.area)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="result-meta">
+                    {lid.isNew ? <span className="inline-badge">新着</span> : null}
+                    {nearbyMode && userLocation ? (
+                      <span className="distance-pill">
+                        {formatDistance(distanceById.get(lid.manholeNo) ?? null)}
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+                <p className="result-pokemon">{lid.pokemon.map(formatPokemonLabel).join(' · ')}</p>
+                <div className="result-tags">
+                  <span className="band-pill">
+                    {getAccessibilityBandLabel(lid.accessibility.band)}
+                  </span>
+                  {lid.accessibility.reasons.slice(0, 2).map((reason) => (
+                    <span className="reason-pill" key={reason}>
+                      {getAccessibilityReasonLabel(reason)}
+                    </span>
+                  ))}
+                </div>
+              </button>
+            ))}
+
+            {visibleLids.length === 0 ? (
+              <div className="empty-state">
+                <strong>条件に合うポケふたが見つかりません。</strong>
+                <p>絞り込み条件を少しゆるめると、一覧と地図がすぐに戻ります。</p>
+                <button className="ghost-action" onClick={resetFilters} type="button">
+                  すべて解除する
+                </button>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function SummarySpotlight({
   distanceKm,
   label,
@@ -630,32 +729,42 @@ function SummarySpotlight({
   )
 }
 
-function DetailCard({
+function MapPopupCard({
   distanceKm,
   lid,
+  onClose,
 }: {
   distanceKm: number | null
   lid: PokeLidRecord
+  onClose: () => void
 }) {
   const visual = getAccessibilityVisual(lid.accessibility.score)
 
   return (
-    <article className="detail-card">
+    <article className="map-popup-card">
+      <button
+        aria-label="スポット詳細を閉じる"
+        className="map-popup-close"
+        onClick={onClose}
+        type="button"
+      >
+        ×
+      </button>
       <img alt={lid.name} loading="lazy" src={lid.imageUrl} />
-      <div className="detail-copy">
-        <div className="detail-header">
+      <div className="map-popup-copy">
+        <div className="map-popup-header">
           <p>
             {lid.prefName} · {areaLabel(lid.area)} · ポケふた #{lid.manholeNo}
           </p>
           <strong>{lid.name}</strong>
         </div>
 
-        <div className="detail-access">
+        <div className="map-popup-access">
           <span
             className="score-pill"
             style={{ '--score-color': visual.color } as CSSProperties}
           >
-            Reachability {lid.accessibility.score} / 5
+            Reach {lid.accessibility.score}
           </span>
           <span className="band-pill">{getAccessibilityBandLabel(lid.accessibility.band)}</span>
           {distanceKm !== null ? (
@@ -664,27 +773,27 @@ function DetailCard({
           {lid.isNew ? <span className="inline-badge">新着</span> : null}
         </div>
 
-        <p className="detail-pokemon-line">
+        <p className="map-popup-pokemon">
           {lid.pokemon.map(formatPokemonLabel).join(' · ')}
         </p>
 
-        <div className="detail-tags">
-          {lid.accessibility.reasons.map((reason) => (
+        <div className="map-popup-tags">
+          {lid.accessibility.reasons.slice(0, 2).map((reason) => (
             <span className="reason-pill" key={reason}>
               {getAccessibilityReasonLabel(reason)}
             </span>
           ))}
         </div>
 
-        <div className="detail-actions">
+        <div className="map-popup-actions">
           <a href={lid.sourceUrl} rel="noreferrer" target="_blank">
             公式ページ
           </a>
           <a href={lid.googleMapsUrl} rel="noreferrer" target="_blank">
-            Googleマップ
+            地図
           </a>
           <a href={buildGoogleNavigationLink(lid.lat, lid.lng)} rel="noreferrer" target="_blank">
-            Googleでナビ
+            ナビ
           </a>
         </div>
       </div>
@@ -707,6 +816,19 @@ function FilterIcon() {
     <svg fill="none" viewBox="0 0 24 24">
       <path
         d="M4 7h16M7 12h10M10 17h4"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  )
+}
+
+function CollectionIcon() {
+  return (
+    <svg fill="none" viewBox="0 0 24 24">
+      <path
+        d="M5 6.5h14M5 12h14M5 17.5h9"
         stroke="currentColor"
         strokeLinecap="round"
         strokeWidth="1.8"
