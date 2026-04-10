@@ -10,7 +10,7 @@ export type AccessibilityBand =
   | 'hard'
   | 'remote'
 
-export type AccessFilter = '' | 'easy' | 'moderate' | 'remote'
+export type AccessibilityScore = 1 | 2 | 3 | 4 | 5
 
 export type AccessibilityReason =
   | 'station_nearby'
@@ -42,7 +42,7 @@ export type AccessibilityMetrics = {
 }
 
 export type AccessibilityInfo = {
-  score: 1 | 2 | 3 | 4 | 5
+  score: AccessibilityScore
   band: AccessibilityBand
   reasons: AccessibilityReason[]
   metrics: AccessibilityMetrics
@@ -74,8 +74,7 @@ export type UserLocation = {
 
 export type QueryState = {
   area: string
-  access: AccessFilter
-  keyword: string
+  accessScores: AccessibilityScore[]
   newOnly: boolean
   pokemon: string
   pref: string

@@ -1,14 +1,18 @@
-import type { AccessFilter, QueryState } from '../types.ts'
+import type { AccessibilityScore, QueryState } from '../types.ts'
 
-const ACCESS_FILTERS = new Set<AccessFilter>(['easy', 'moderate', 'remote'])
+const ACCESS_SCORES = [1, 2, 3, 4, 5] as const
+const LEGACY_ACCESS_SCORES = {
+  easy: [1, 2],
+  moderate: [3],
+  remote: [4, 5],
+} as const satisfies Record<string, AccessibilityScore[]>
 
 export function getInitialQueryState(): QueryState {
   const params = new URLSearchParams(window.location.search)
 
   return {
     area: params.get('area') ?? '',
-    access: parseAccessFilter(params.get('access')),
-    keyword: params.get('q') ?? '',
+    accessScores: parseAccessScores(params),
     newOnly: params.get('new') === '1',
     pokemon: params.get('pokemon') ?? '',
     pref: params.get('pref') ?? '',
@@ -28,8 +32,9 @@ export function queryStateToSearchParams(
   if (query.pref) params.set('pref', query.pref)
   if (query.area) params.set('area', query.area)
   if (query.pokemon) params.set('pokemon', query.pokemon)
-  if (query.keyword) params.set('q', query.keyword)
-  if (query.access) params.set('access', query.access)
+  if (query.accessScores.length > 0) {
+    params.set('scores', sortAccessScores(query.accessScores).join(','))
+  }
   if (query.newOnly) params.set('new', '1')
   if (options.nearby) params.set('nearby', '1')
 
@@ -78,10 +83,31 @@ export function classNames(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(' ')
 }
 
-function parseAccessFilter(value: string | null): AccessFilter {
-  if (value && ACCESS_FILTERS.has(value as AccessFilter)) {
-    return value as AccessFilter
+function parseAccessScores(params: URLSearchParams): AccessibilityScore[] {
+  const scoresParam = params.get('scores')
+  if (scoresParam) {
+    const scores = scoresParam
+      .split(',')
+      .map((value) => Number(value.trim()))
+      .filter(isAccessibilityScore)
+
+    if (scores.length > 0) {
+      return sortAccessScores(scores)
+    }
   }
 
-  return ''
+  const legacyAccess = params.get('access')
+  if (legacyAccess && legacyAccess in LEGACY_ACCESS_SCORES) {
+    return [...LEGACY_ACCESS_SCORES[legacyAccess as keyof typeof LEGACY_ACCESS_SCORES]]
+  }
+
+  return []
+}
+
+function isAccessibilityScore(value: number): value is AccessibilityScore {
+  return ACCESS_SCORES.includes(value as AccessibilityScore)
+}
+
+function sortAccessScores(scores: AccessibilityScore[]) {
+  return [...new Set(scores)].sort((left, right) => left - right)
 }

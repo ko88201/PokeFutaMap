@@ -1,6 +1,4 @@
 import {
-  startTransition,
-  useDeferredValue,
   useEffect,
   useRef,
   useState,
@@ -24,7 +22,7 @@ import {
   getAccessibilityVisual,
 } from './lib/accessibility.ts'
 import type {
-  AccessFilter,
+  AccessibilityScore,
   PokemonEntry,
   PokeLidRecord,
   QueryState,
@@ -50,20 +48,9 @@ const AREA_OPTIONS = [
   'okinawa',
 ] as const
 
-const ACCESS_FILTER_OPTIONS: Array<{
-  description: string
-  label: string
-  value: Exclude<AccessFilter, ''>
-}> = [
-  { value: 'easy', label: '1-2 行きやすい', description: '駅や主要ルートから寄りやすい' },
-  { value: 'moderate', label: '3 ふつう', description: '旅程に入れやすい中間レンジ' },
-  { value: 'remote', label: '4-5 遠征向け', description: '計画的に回りたいスポット' },
-]
-
 const DEFAULT_QUERY: QueryState = {
   area: '',
-  access: '',
-  keyword: '',
+  accessScores: [],
   newOnly: false,
   pokemon: '',
   pref: '',
@@ -74,14 +61,6 @@ const DESKTOP_BREAKPOINT = 980
 function App() {
   const [dataState, setDataState] = useState<DataState>({ status: 'loading' })
   const [query, setQuery] = useState<QueryState>(() => getInitialQueryState())
-  const deferredKeyword = useDeferredValue(query.keyword)
-  const effectiveQuery =
-    deferredKeyword === query.keyword
-      ? query
-      : {
-          ...query,
-          keyword: deferredKeyword,
-        }
   const [activeId, setActiveId] = useState<string | null>(null)
   const [panelOpen, setPanelOpen] = useState(() => window.innerWidth >= DESKTOP_BREAKPOINT)
   const [nearbyMode, setNearbyMode] = useState(() => getInitialNearbyMode())
@@ -168,7 +147,7 @@ function App() {
   const allPokemon = [...pokemonMap.values()].sort((left, right) => left.number - right.number)
   const allPrefectures = [...new Set<string>(readyLids.map((lid) => lid.prefName))].sort()
   const distanceById = buildDistanceMap(readyLids, userLocation)
-  const filteredLids = filterLids(readyLids, effectiveQuery)
+  const filteredLids = filterLids(readyLids, query)
   const visibleLids = sortLids(filteredLids, distanceById, nearbyMode, userLocation)
   const activeLid =
     visibleLids.find((lid) => lid.manholeNo === activeId) ??
@@ -342,56 +321,66 @@ function App() {
               <p className="eyebrow">Map Console</p>
               <h2>{visibleLids.length} spots</h2>
             </div>
-            <p className="summary-copy">
-              {nearbyMode && userLocation
-                ? '現在地から近い順に表示しています。'
-                : '色で行きやすさ、タップでスポット詳細を確認できます。'}
-            </p>
           </div>
 
-          <div className="summary-metrics">
-            <MetricCard label="表示中" value={String(visibleLids.length)} />
-            <MetricCard
-              label="モード"
-              value={nearbyMode ? 'Nearby' : 'National'}
-            />
-            <MetricCard
-              label="スコア"
-              value={query.access ? getAccessFilterLabel(query.access) : '1-5'}
-            />
+          <div className="summary-meta" aria-label="地圖狀態摘要">
+            <span className="summary-meta-chip">
+              {nearbyMode ? 'Nearby' : 'National'}
+            </span>
+            <span className="summary-meta-chip">
+              {query.accessScores.length > 0
+                ? formatAccessScoreSummary(query.accessScores)
+                : '1-5'}
+            </span>
           </div>
 
-          <div className="summary-legend" aria-label="行きやすさの凡例">
-            <div className="summary-legend-header">
-              <p className="eyebrow">Primary Layer</p>
-              <strong>Reachability</strong>
-            </div>
+          <div className="summary-legend" aria-label="行きやすさで絞り込む">
             <div className="summary-legend-scale">
               {ACCESSIBILITY_VISUALS.map((entry) => (
-                <div className="summary-legend-item" key={entry.score}>
+                <button
+                  aria-label={`${entry.score} ${entry.label}`}
+                  aria-pressed={query.accessScores.includes(entry.score)}
+                  className={classNames(
+                    'summary-legend-item',
+                    query.accessScores.includes(entry.score) && 'active',
+                    query.accessScores.length > 0 &&
+                      !query.accessScores.includes(entry.score) &&
+                      'muted',
+                  )}
+                  key={entry.score}
+                  onClick={() => {
+                    setQueryValue(
+                      'accessScores',
+                      toggleAccessScore(query.accessScores, entry.score),
+                    )
+                  }}
+                  title={entry.label}
+                  type="button"
+                >
                   <span
                     className="legend-dot"
                     style={{ '--score-color': entry.color } as CSSProperties}
                   >
                     {entry.score}
                   </span>
-                  <span>{entry.label}</span>
-                </div>
+                </button>
               ))}
             </div>
           </div>
 
-          <div className="summary-chip-row">
-            {filterTags.length > 0 ? (
-              filterTags.map((tag) => (
-                <span className="summary-chip" key={tag}>
-                  {tag}
-                </span>
-              ))
-            ) : (
-              <span className="summary-chip summary-chip-muted">フィルターなし</span>
-            )}
-          </div>
+          {filterTags.length > 0 || query.accessScores.length === 0 ? (
+            <div className="summary-chip-row">
+              {filterTags.length > 0 ? (
+                filterTags.map((tag) => (
+                  <span className="summary-chip" key={tag}>
+                    {tag}
+                  </span>
+                ))
+              ) : (
+                <span className="summary-chip summary-chip-muted">フィルターなし</span>
+              )}
+            </div>
+          ) : null}
 
           {summaryLid ? (
             <SummarySpotlight
@@ -399,70 +388,11 @@ function App() {
               label={activeLid ? '選択中のポケふた' : '現在地から最寄り'}
               lid={summaryLid}
             />
-          ) : (
-            <div className="summary-empty">
-              <strong>地図上の色分布で、移動難度の傾向をひと目で確認できます。</strong>
-              <p>検索を開いて都道府県やポケモンを絞り込むと、地図も一覧も即座に連動します。</p>
-            </div>
-          )}
+          ) : null}
         </div>
 
         <div className="sheet-body">
           <div className="sheet-scroll">
-            <label className="search-field">
-              <span className="field-label">キーワード検索</span>
-              <div className="search-input-shell">
-                <SearchIcon />
-                <input
-                  onChange={(event) => {
-                    const nextValue = event.target.value
-                    startTransition(() => {
-                      setQuery((current) => ({
-                        ...current,
-                        keyword: nextValue,
-                      }))
-                    })
-                  }}
-                  placeholder="地名 / ポケモン名 / No. / 英字キーワード"
-                  type="search"
-                  value={query.keyword}
-                />
-              </div>
-            </label>
-
-            <section className="panel-section">
-              <div className="section-heading">
-                <div>
-                  <p className="eyebrow">Quick Access</p>
-                  <h3>行きやすさで絞り込む</h3>
-                </div>
-                <p>1-5 の reachability を主役にした表示です。</p>
-              </div>
-
-              <div className="access-chip-row">
-                {ACCESS_FILTER_OPTIONS.map((option) => (
-                  <button
-                    aria-pressed={query.access === option.value}
-                    className={classNames(
-                      'access-chip',
-                      query.access === option.value && 'active',
-                    )}
-                    key={option.value}
-                    onClick={() => {
-                      setQueryValue(
-                        'access',
-                        query.access === option.value ? '' : option.value,
-                      )
-                    }}
-                    type="button"
-                  >
-                    <strong>{option.label}</strong>
-                    <span>{option.description}</span>
-                  </button>
-                ))}
-              </div>
-            </section>
-
             <section className="panel-section">
               <div className="section-heading">
                 <div>
@@ -665,15 +595,6 @@ function ControlButton({
   )
 }
 
-function MetricCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="metric-card">
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  )
-}
-
 function FilterSelect({
   label,
   onChange,
@@ -851,22 +772,7 @@ function CompassIcon() {
   )
 }
 
-function SearchIcon() {
-  return (
-    <svg fill="none" viewBox="0 0 24 24">
-      <path
-        d="m20 20-4.2-4.2m1.8-5.3a6.8 6.8 0 1 1-13.6 0 6.8 6.8 0 0 1 13.6 0Z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeWidth="1.8"
-      />
-    </svg>
-  )
-}
-
 function filterLids(lids: PokeLidRecord[], query: QueryState) {
-  const terms = normalizeSearchText(query.keyword).split(' ').filter(Boolean)
-
   return lids.filter((lid) => {
     if (query.pref && lid.prefName !== query.pref) {
       return false
@@ -884,16 +790,14 @@ function filterLids(lids: PokeLidRecord[], query: QueryState) {
       return false
     }
 
-    if (query.access && !matchesAccessFilter(lid.accessibility.score, query.access)) {
+    if (
+      query.accessScores.length > 0 &&
+      !query.accessScores.includes(lid.accessibility.score)
+    ) {
       return false
     }
 
-    if (terms.length === 0) {
-      return true
-    }
-
-    const haystack = normalizeSearchText(buildSearchHaystack(lid))
-    return terms.every((term) => haystack.includes(term))
+    return true
   })
 }
 
@@ -923,29 +827,13 @@ function buildFilterTags(query: QueryState, nearbyMode: boolean) {
   const tags: string[] = []
 
   if (nearbyMode) tags.push('現在地から近い順')
-  if (query.keyword) tags.push(`検索: ${query.keyword}`)
   if (query.pref) tags.push(query.pref)
   if (query.area) tags.push(areaLabel(query.area))
   if (query.pokemon) tags.push(`No.${query.pokemon.padStart(4, '0')}`)
-  if (query.access) tags.push(getAccessFilterLabel(query.access))
   if (query.newOnly) tags.push('新着のみ')
 
   return tags
 }
-
-function buildSearchHaystack(lid: PokeLidRecord) {
-  return [
-    lid.name,
-    lid.prefName,
-    areaLabel(lid.area),
-    lid.searchKeywords,
-    lid.manholeNo,
-    ...lid.pokemon.map((pokemon) => pokemon.name),
-    ...lid.pokemon.map((pokemon) => String(pokemon.number)),
-    ...lid.pokemon.map((pokemon) => formatPokemonLabel(pokemon)),
-  ].join(' ')
-}
-
 function buildDistanceMap(lids: PokeLidRecord[], userLocation: UserLocation | null) {
   const distanceById = new Map<string, number>()
 
@@ -960,29 +848,19 @@ function buildDistanceMap(lids: PokeLidRecord[], userLocation: UserLocation | nu
   return distanceById
 }
 
-function normalizeSearchText(value: string) {
-  return value
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}]+/gu, ' ')
-    .trim()
-    .replace(/\s+/g, ' ')
-}
-
-function matchesAccessFilter(score: number, access: Exclude<AccessFilter, ''>) {
-  switch (access) {
-    case 'easy':
-      return score <= 2
-    case 'moderate':
-      return score === 3
-    case 'remote':
-      return score >= 4
-    default:
-      return true
+function toggleAccessScore(
+  currentScores: AccessibilityScore[],
+  score: AccessibilityScore,
+) {
+  if (currentScores.includes(score)) {
+    return currentScores.filter((entry) => entry !== score)
   }
+
+  return [...currentScores, score].sort((left, right) => left - right)
 }
 
-function getAccessFilterLabel(access: Exclude<AccessFilter, ''>) {
-  return ACCESS_FILTER_OPTIONS.find((option) => option.value === access)?.label ?? access
+function formatAccessScoreSummary(scores: AccessibilityScore[]) {
+  return [...scores].sort((left, right) => left - right).join('・')
 }
 
 function requestCurrentLocation({
