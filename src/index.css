@@ -972,6 +972,10 @@ select:focus-visible {
     padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px 0;
   }
 
+  .topbar-actions {
+    flex-wrap: nowrap;
+  }
+
   .sheet {
     top: calc(env(safe-area-inset-top, 0px) + 112px);
     left: 20px;
@@ -1010,7 +1014,7 @@ select:focus-visible {
   }
 
   .maplibregl-ctrl-top-right {
-    top: calc(env(safe-area-inset-top, 0px) + 24px);
+    top: calc(env(safe-area-inset-top, 0px) + 88px);
     right: 20px;
   }
 
