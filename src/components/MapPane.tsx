@@ -85,7 +85,30 @@ export function MapPane({
           zoom: 4.5,
         })
 
-        map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right')
+        map.addControl(
+          new maplibregl.NavigationControl({
+            showCompass: true,
+            showZoom: false,
+            visualizePitch: true,
+          }),
+          'bottom-right',
+        )
+
+        const compassButton = map
+          .getContainer()
+          .querySelector('.maplibregl-ctrl-compass') as HTMLButtonElement | null
+        const compassIcon = compassButton?.querySelector('.maplibregl-ctrl-icon')
+
+        if (compassButton) {
+          const controlLabel = '地図の向きと角度を調整'
+          compassButton.classList.add('map-gyro-button')
+          compassButton.title = controlLabel
+          compassButton.setAttribute('aria-label', controlLabel)
+        }
+
+        if (compassIcon) {
+          compassIcon.classList.add('map-gyro-icon')
+        }
 
         map.on('load', () => {
           if (cancelled || !map) {

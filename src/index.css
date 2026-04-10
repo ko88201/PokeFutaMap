@@ -177,7 +177,7 @@ select:focus-visible {
 
 .maplibregl-ctrl-bottom-right {
   right: 12px;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 208px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 266px);
 }
 
 .maplibregl-ctrl-group {
@@ -196,6 +196,61 @@ select:focus-visible {
 
 .maplibregl-ctrl button span {
   filter: contrast(0) brightness(0.16);
+}
+
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl {
+  margin: 0;
+}
+
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
+  overflow: visible;
+  border-color: rgba(19, 33, 41, 0.08);
+  border-radius: 999px;
+  background: rgba(248, 244, 235, 0.7);
+  box-shadow:
+    0 18px 30px rgba(19, 33, 41, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.38);
+  backdrop-filter: blur(18px) saturate(0.9);
+}
+
+.map-gyro-button {
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.58), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0));
+  transition:
+    transform 180ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease,
+    border-color 220ms ease;
+}
+
+.map-gyro-button .map-gyro-icon {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background-image: none !important;
+  filter: none !important;
+  transform-origin: center;
+}
+
+.map-gyro-button .map-gyro-icon::before {
+  content: '🌀';
+  display: block;
+  font-size: 1.56rem;
+  line-height: 1;
+  font-family:
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Noto Color Emoji',
+    sans-serif;
+}
+
+.map-gyro-button:active {
+  transform: translateY(1px) scale(0.97);
 }
 
 .topbar {
@@ -930,6 +985,7 @@ select:focus-visible {
 
 @media (hover: hover) {
   .control-button:hover,
+  .map-gyro-button:hover,
   .ghost-action:hover,
   .access-chip:hover,
   .toggle-card:hover,
@@ -1013,14 +1069,9 @@ select:focus-visible {
     grid-template-columns: 112px 1fr;
   }
 
-  .maplibregl-ctrl-top-right {
-    top: calc(env(safe-area-inset-top, 0px) + 88px);
-    right: 20px;
-  }
-
   .maplibregl-ctrl-bottom-right {
     right: 20px;
-    bottom: 20px;
+    bottom: 72px;
   }
 }
 
@@ -1037,6 +1088,10 @@ select:focus-visible {
 
   .attribution-mini {
     bottom: calc(env(safe-area-inset-bottom, 0px) + 214px);
+  }
+
+  .maplibregl-ctrl-bottom-right {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 272px);
   }
 }
 
@@ -1085,15 +1140,24 @@ select:focus-visible {
     height: 28px;
   }
 
-  .maplibregl-ctrl-top-right {
-    top: calc(env(safe-area-inset-top, 0px) + 194px);
-    right: 12px;
-  }
-
   .attribution-mini {
     right: 10px;
     bottom: calc(env(safe-area-inset-bottom, 0px) + 206px);
     max-width: min(272px, calc(100vw - 20px));
+  }
+
+  .maplibregl-ctrl-bottom-right {
+    right: 10px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 258px);
+  }
+
+  .map-gyro-button {
+    width: 52px !important;
+    height: 52px !important;
+  }
+
+  .map-gyro-button .map-gyro-icon::before {
+    font-size: 1.42rem;
   }
 }
 
