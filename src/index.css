@@ -361,60 +361,15 @@ select:focus-visible {
 }
 
 .summary-header {
-  display: grid;
-  gap: 4px;
+  display: block;
   margin-bottom: 10px;
 }
 
 .summary-header h2 {
-  margin: 6px 0 0;
+  margin: 0;
   font: 700 clamp(1.72rem, 7vw, 2.7rem) / 0.92 var(--display);
   letter-spacing: 0.04em;
   text-transform: uppercase;
-}
-
-.summary-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.summary-meta-chip {
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  padding: 0 12px;
-  border: 1px solid rgba(19, 33, 41, 0.08);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.56);
-  color: var(--muted);
-  font: 700 0.78rem/1 var(--display);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.summary-chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.summary-chip {
-  display: inline-flex;
-  align-items: center;
-  min-height: 32px;
-  padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(19, 33, 41, 0.08);
-  background: rgba(255, 255, 255, 0.56);
-  color: var(--muted);
-  font-size: 0.82rem;
-}
-
-.summary-chip-muted {
-  background: rgba(19, 33, 41, 0.05);
 }
 
 .summary-spotlight {

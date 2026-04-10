@@ -154,7 +154,6 @@ function App() {
     readyLids.find((lid) => lid.manholeNo === activeId) ??
     null
   const summaryLid = activeLid ?? (nearbyMode ? visibleLids[0] ?? null : null)
-  const filterTags = buildFilterTags(query, nearbyMode)
 
   useEffect(() => {
     if (!activeId) {
@@ -317,21 +316,7 @@ function App() {
           </button>
 
           <div className="summary-header">
-            <div>
-              <p className="eyebrow">Map Console</p>
-              <h2>{visibleLids.length} spots</h2>
-            </div>
-          </div>
-
-          <div className="summary-meta" aria-label="地圖狀態摘要">
-            <span className="summary-meta-chip">
-              {nearbyMode ? 'Nearby' : 'National'}
-            </span>
-            <span className="summary-meta-chip">
-              {query.accessScores.length > 0
-                ? formatAccessScoreSummary(query.accessScores)
-                : '1-5'}
-            </span>
+            <h2>{visibleLids.length} spots</h2>
           </div>
 
           <div className="summary-legend" aria-label="行きやすさで絞り込む">
@@ -367,20 +352,6 @@ function App() {
               ))}
             </div>
           </div>
-
-          {filterTags.length > 0 || query.accessScores.length === 0 ? (
-            <div className="summary-chip-row">
-              {filterTags.length > 0 ? (
-                filterTags.map((tag) => (
-                  <span className="summary-chip" key={tag}>
-                    {tag}
-                  </span>
-                ))
-              ) : (
-                <span className="summary-chip summary-chip-muted">フィルターなし</span>
-              )}
-            </div>
-          ) : null}
 
           {summaryLid ? (
             <SummarySpotlight
@@ -823,17 +794,6 @@ function sortLids(
   })
 }
 
-function buildFilterTags(query: QueryState, nearbyMode: boolean) {
-  const tags: string[] = []
-
-  if (nearbyMode) tags.push('現在地から近い順')
-  if (query.pref) tags.push(query.pref)
-  if (query.area) tags.push(areaLabel(query.area))
-  if (query.pokemon) tags.push(`No.${query.pokemon.padStart(4, '0')}`)
-  if (query.newOnly) tags.push('新着のみ')
-
-  return tags
-}
 function buildDistanceMap(lids: PokeLidRecord[], userLocation: UserLocation | null) {
   const distanceById = new Map<string, number>()
 
@@ -857,10 +817,6 @@ function toggleAccessScore(
   }
 
   return [...currentScores, score].sort((left, right) => left - right)
-}
-
-function formatAccessScoreSummary(scores: AccessibilityScore[]) {
-  return [...scores].sort((left, right) => left - right).join('・')
 }
 
 function requestCurrentLocation({
