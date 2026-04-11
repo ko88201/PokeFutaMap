@@ -171,6 +171,16 @@ function App() {
 
   const allPokemon = [...pokemonMap.values()].sort((left, right) => left.number - right.number)
   const allPrefectures = [...new Set<string>(readyLids.map((lid) => lid.prefName))].sort()
+  const prefectureToArea = new Map<string, string>()
+  for (const lid of readyLids) {
+    if (!prefectureToArea.has(lid.prefName)) {
+      prefectureToArea.set(lid.prefName, lid.area)
+    }
+  }
+
+  const prefecturesForSelectedArea = query.area
+    ? allPrefectures.filter((prefecture) => prefectureToArea.get(prefecture) === query.area)
+    : allPrefectures
   const distanceById = buildDistanceMap(readyLids, userLocation)
   const filteredLids = filterLids(readyLids, query)
   const visibleLids = sortLids(filteredLids, distanceById, nearbyMode, userLocation)
@@ -179,7 +189,6 @@ function App() {
     readyLids.find((lid) => lid.manholeNo === activeId) ??
     null
   const activeDistanceKm = activeLid ? distanceById.get(activeLid.manholeNo) ?? null : null
-  const summaryLid = activeLid ?? (nearbyMode ? visibleLids[0] ?? null : null)
 
   useEffect(() => {
     if (!activeId) {
@@ -220,6 +229,54 @@ function App() {
     setQuery((current) => ({
       ...current,
       [key]: value,
+    }))
+  }
+
+  function handleAreaChange(value: string) {
+    setQuery((current) => {
+      if (!value) {
+        return {
+          ...current,
+          area: '',
+          pref: '',
+        }
+      }
+
+      return {
+        ...current,
+        area: value,
+        pokemon: '',
+        pref:
+          current.pref && prefectureToArea.get(current.pref) === value ? current.pref : '',
+      }
+    })
+  }
+
+  function handlePrefChange(value: string) {
+    setQuery((current) => {
+      if (!value) {
+        return {
+          ...current,
+          pref: '',
+          area: '',
+        }
+      }
+
+      return {
+        ...current,
+        area: prefectureToArea.get(value) ?? '',
+        pokemon: '',
+        pref: value,
+      }
+    })
+  }
+
+  function handlePokemonChange(value: string) {
+    setQuery((current) => ({
+      ...current,
+      area: '',
+      pokemon: value,
+      pref: '',
     }))
   }
 
@@ -403,36 +460,12 @@ function App() {
             </div>
           </div>
 
-          {summaryLid ? (
-            <SummarySpotlight
-              distanceKm={distanceById.get(summaryLid.manholeNo) ?? null}
-              label={activeLid ? '選択中のポケふた' : '現在地から最寄り'}
-              lid={summaryLid}
-            />
-          ) : null}
-
           <div className="sheet-scroll">
             <section className="panel-section">
-              <div className="panel-section-header">
-                <h3>絞り込み</h3>
-              </div>
-
               <div className="field-grid">
                 <FilterSelect
-                  label="都道府県"
-                  onChange={(value) => setQueryValue('pref', value)}
-                  options={[
-                    { label: 'すべての都道府県', value: '' },
-                    ...allPrefectures.map((prefecture) => ({
-                      label: prefecture,
-                      value: prefecture,
-                    })),
-                  ]}
-                  value={query.pref}
-                />
-                <FilterSelect
                   label="エリア"
-                  onChange={(value) => setQueryValue('area', value)}
+                  onChange={handleAreaChange}
                   options={[
                     { label: 'すべてのエリア', value: '' },
                     ...AREA_OPTIONS.map((area) => ({
@@ -443,8 +476,20 @@ function App() {
                   value={query.area}
                 />
                 <FilterSelect
+                  label="都道府県"
+                  onChange={handlePrefChange}
+                  options={[
+                    { label: 'すべての都道府県', value: '' },
+                    ...prefecturesForSelectedArea.map((prefecture) => ({
+                      label: prefecture,
+                      value: prefecture,
+                    })),
+                  ]}
+                  value={query.pref}
+                />
+                <FilterSelect
                   label="ポケモン"
-                  onChange={(value) => setQueryValue('pokemon', value)}
+                  onChange={handlePokemonChange}
                   options={[
                     { label: 'すべてのポケモン', value: '' },
                     ...allPokemon.map((pokemon) => ({
@@ -688,43 +733,6 @@ function CollectionPanel({
         </div>
       </div>
     </section>
-  )
-}
-
-function SummarySpotlight({
-  distanceKm,
-  label,
-  lid,
-}: {
-  distanceKm: number | null
-  label: string
-  lid: PokeLidRecord
-}) {
-  const visual = getAccessibilityVisual(lid.accessibility.score)
-
-  return (
-    <article className="summary-spotlight">
-      <img alt={lid.name} loading="lazy" src={lid.imageUrl} />
-      <div className="summary-spotlight-copy">
-        <div className="summary-spotlight-header">
-          <span>{label}</span>
-          <strong
-            className="score-pill"
-            style={{ '--score-color': visual.color } as CSSProperties}
-          >
-            Reach {lid.accessibility.score}
-          </strong>
-        </div>
-        <h3>{lid.name}</h3>
-        <p>
-          {lid.prefName} · {areaLabel(lid.area)}
-        </p>
-        <div className="summary-spotlight-meta">
-          <span>{getAccessibilityBandLabel(lid.accessibility.band)}</span>
-          {distanceKm !== null ? <span>{formatDistance(distanceKm)}</span> : null}
-        </div>
-      </div>
-    </article>
   )
 }
 
