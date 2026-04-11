@@ -564,22 +564,47 @@ select:focus-visible {
   background-clip: padding-box;
 }
 
-.map-popup-anchor {
-  position: absolute;
+.map-popup-root {
+  --popup-max-width: 336px;
+}
+
+.maplibregl-popup.pokefuta-native-popup {
   z-index: 4;
-  left: var(--popup-left);
-  top: var(--popup-top);
-  width: 0;
-  height: 0;
-  pointer-events: none;
 }
 
-.map-popup-anchor.anchor-above {
-  transform: translate(-50%, calc(-100% - 18px));
+.maplibregl-popup.pokefuta-native-popup .maplibregl-popup-content {
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
 }
 
-.map-popup-anchor.anchor-below {
-  transform: translate(-50%, 18px);
+.maplibregl-popup.pokefuta-native-popup .maplibregl-popup-tip {
+  border-color: transparent;
+}
+
+.maplibregl-popup.pokefuta-native-popup.maplibregl-popup-anchor-top .maplibregl-popup-tip,
+.maplibregl-popup.pokefuta-native-popup.maplibregl-popup-anchor-top-left .maplibregl-popup-tip,
+.maplibregl-popup.pokefuta-native-popup.maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
+  border-bottom-color: rgba(250, 247, 240, 0.96);
+  filter: drop-shadow(0 1px 0 rgba(19, 33, 41, 0.12));
+}
+
+.maplibregl-popup.pokefuta-native-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
+.maplibregl-popup.pokefuta-native-popup.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip,
+.maplibregl-popup.pokefuta-native-popup.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
+  border-top-color: rgba(250, 247, 240, 0.96);
+  filter: drop-shadow(0 -1px 0 rgba(19, 33, 41, 0.12));
+}
+
+.maplibregl-popup.pokefuta-native-popup.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+  border-right-color: rgba(250, 247, 240, 0.96);
+  filter: drop-shadow(1px 0 0 rgba(19, 33, 41, 0.12));
+}
+
+.maplibregl-popup.pokefuta-native-popup.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+  border-left-color: rgba(250, 247, 240, 0.96);
+  filter: drop-shadow(-1px 0 0 rgba(19, 33, 41, 0.12));
 }
 
 .map-popup-card {
@@ -587,7 +612,7 @@ select:focus-visible {
   display: grid;
   grid-template-columns: 96px 1fr;
   gap: 14px;
-  width: min(var(--popup-max-width), calc(100vw - 24px));
+  width: min(var(--popup-max-width, 336px), calc(100vw - 24px));
   padding: 12px;
   border: 1px solid rgba(19, 33, 41, 0.12);
   border-radius: 28px;
@@ -597,25 +622,8 @@ select:focus-visible {
   pointer-events: auto;
 }
 
-.map-popup-anchor.anchor-above .map-popup-card::after,
-.map-popup-anchor.anchor-below .map-popup-card::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  width: 18px;
-  height: 18px;
-  background: rgba(250, 247, 240, 0.96);
-  border-right: 1px solid rgba(19, 33, 41, 0.12);
-  border-bottom: 1px solid rgba(19, 33, 41, 0.12);
-  transform: translateX(-50%) rotate(45deg);
-}
-
-.map-popup-anchor.anchor-above .map-popup-card::after {
-  bottom: -10px;
-}
-
-.map-popup-anchor.anchor-below .map-popup-card::after {
-  top: -10px;
+.maplibregl-popup.pokefuta-native-popup .map-popup-card::after {
+  content: none;
 }
 
 .map-popup-card img {

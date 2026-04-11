@@ -3,9 +3,9 @@ import {
   useEffectEvent,
   useRef,
   useState,
-  type CSSProperties,
   type ReactNode,
 } from 'react'
+import { createPortal } from 'react-dom'
 import type { FeatureCollection } from 'geojson'
 import maplibregl, { GeoJSONSource, Map } from 'maplibre-gl'
 import type {
@@ -55,6 +55,7 @@ const EMPTY_COLLECTION: FeatureCollection = {
 }
 
 const INTERACTIVE_LAYERS = ['pokelid-points', 'pokelid-active'] as const
+const POPUP_OFFSET = 18
 
 type MapPaneProps = {
   activeId: string | null
@@ -85,51 +86,82 @@ export function MapPane({
 }: MapPaneProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<Map | null>(null)
+  const popupRef = useRef<maplibregl.Popup | null>(null)
   const lastVisibleKeyRef = useRef('')
   const [isMapReady, setIsMapReady] = useState(false)
-  const [popupLayout, setPopupLayout] = useState<{
-    anchor: 'above' | 'below'
-    left: number
-    maxWidth: number
-    top: number
-  } | null>(null)
+  const [popupContentNode, setPopupContentNode] = useState<HTMLDivElement | null>(null)
   const handleSelect = useEffectEvent((manholeNo: string | null) => {
     onSelect(manholeNo)
   })
-  const updatePopupLayout = useEffectEvent(() => {
+  const syncNativePopup = useEffectEvent(() => {
     const map = mapRef.current
     const container = containerRef.current
 
-    if (!map || !container || !activeLid) {
-      setPopupLayout(null)
+    if (!map || !container || !activeLid || !popupContent) {
+      popupRef.current?.remove()
+      popupRef.current = null
+      setPopupContentNode(null)
       return
     }
 
-    const point = map.project([activeLid.lng, activeLid.lat])
     const isDesktop = window.innerWidth >= 980
-    const maxWidth = isDesktop ? 336 : Math.min(312, container.clientWidth - 24)
-    const safeInset = getPopupSafeInset({
+    const popupWidth = isDesktop ? 336 : Math.min(312, container.clientWidth - 24)
+    const padding = getPopupSafeInset({
       collectionOpen,
       isDesktop,
       mainPanelOpen,
-      popupWidth: maxWidth,
+      popupWidth,
     })
-    const minLeft = safeInset.left + maxWidth / 2
-    const maxLeft = container.clientWidth - safeInset.right - maxWidth / 2
-    const left = Math.min(Math.max(point.x, minLeft), Math.max(minLeft, maxLeft))
-    const preferBelow = point.y < (isDesktop ? 220 : 208)
-    const top = Math.min(
-      Math.max(point.y, safeInset.top),
-      container.clientHeight - safeInset.bottom,
-    )
+    let contentNode = popupContentNode
+    if (!contentNode) {
+      contentNode = document.createElement('div')
+      contentNode.className = 'map-popup-root'
+      setPopupContentNode(contentNode)
+    }
 
-    setPopupLayout({
-      anchor: preferBelow ? 'below' : 'above',
-      left,
-      maxWidth,
-      top,
-    })
+    contentNode.style.setProperty('--popup-max-width', `${popupWidth}px`)
+
+    let popup = popupRef.current
+    if (!popup) {
+      popup = new maplibregl.Popup({
+        className: 'pokefuta-native-popup',
+        closeButton: false,
+        closeOnClick: false,
+        focusAfterOpen: false,
+        maxWidth: 'none',
+        offset: POPUP_OFFSET,
+        padding,
+      }).setDOMContent(contentNode)
+
+      popupRef.current = popup
+    } else if (popupContentNode !== contentNode) {
+      popup.setDOMContent(contentNode)
+    }
+
+    popup.setPadding(padding)
+    popup.setOffset(POPUP_OFFSET)
+    popup.setMaxWidth('none')
+    popup.setLngLat([activeLid.lng, activeLid.lat])
+
+    if (!popup.isOpen()) {
+      popup.addTo(map)
+    }
   })
+
+  useEffect(() => {
+    if (!activeId || !popupContentNode) {
+      return
+    }
+
+    const observer = new ResizeObserver(() => {
+      syncNativePopup()
+    })
+
+    observer.observe(popupContentNode)
+    return () => {
+      observer.disconnect()
+    }
+  }, [activeId, popupContentNode, syncNativePopup])
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) {
@@ -274,13 +306,7 @@ export function MapPane({
           })
 
           setIsMapReady(true)
-          map.on('move', () => {
-            updatePopupLayout()
-          })
-
-          map.on('resize', () => {
-            updatePopupLayout()
-          })
+          map.on('resize', syncNativePopup)
         })
 
         mapRef.current = map
@@ -292,6 +318,8 @@ export function MapPane({
     return () => {
       cancelled = true
       setIsMapReady(false)
+      popupRef.current?.remove()
+      popupRef.current = null
       map?.remove()
       mapRef.current = null
       lastVisibleKeyRef.current = ''
@@ -376,8 +404,8 @@ export function MapPane({
       return
     }
 
-    updatePopupLayout()
-  }, [activeLid, collectionOpen, isMapReady, mainPanelOpen, popupContent])
+    syncNativePopup()
+  }, [activeLid, collectionOpen, isMapReady, mainPanelOpen, popupContent, popupContentNode])
 
   useEffect(() => {
     const map = mapRef.current
@@ -409,23 +437,12 @@ export function MapPane({
   }, [collectionOpen, isMapReady, locateSignal, mainPanelOpen, userLocation])
 
   return (
-    <section className="map-view" aria-label="ポケふた地図">
-      <div className="map-canvas" ref={containerRef} />
-      {activeLid && popupContent && popupLayout ? (
-        <div
-          className={`map-popup-anchor ${popupLayout.anchor === 'below' ? 'anchor-below' : 'anchor-above'}`}
-          style={
-            {
-              '--popup-left': `${popupLayout.left}px`,
-              '--popup-max-width': `${popupLayout.maxWidth}px`,
-              '--popup-top': `${popupLayout.top}px`,
-            } as CSSProperties
-          }
-        >
-          {popupContent}
-        </div>
-      ) : null}
-    </section>
+    <>
+      <section className="map-view" aria-label="ポケふた地図">
+        <div className="map-canvas" ref={containerRef} />
+      </section>
+      {popupContentNode && popupContent ? createPortal(popupContent, popupContentNode) : null}
+    </>
   )
 }
 
