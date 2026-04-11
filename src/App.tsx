@@ -358,7 +358,7 @@ function App() {
           collectionOpen && !isDesktopViewport && 'backgrounded',
         )}
       >
-        <div className="sheet-summary">
+        <div className="sheet-body">
           <button
             aria-expanded={mainPanelOpen}
             aria-label={mainPanelOpen ? 'パネルを折りたたむ' : 'パネルを展開する'}
@@ -410,9 +410,7 @@ function App() {
               lid={summaryLid}
             />
           ) : null}
-        </div>
 
-        <div className="sheet-body">
           <div className="sheet-scroll">
             <section className="panel-section">
               <div className="panel-section-header">

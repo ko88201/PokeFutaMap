@@ -272,7 +272,9 @@ select:focus-visible {
   display: flex;
   justify-content: center;
   padding-inline: 8px;
-  margin-bottom: 14px;
+  padding-top: 8px;
+  padding-bottom: 4px;
+  margin-bottom: 10px;
 }
 
 .summary-legend-scale {
@@ -288,8 +290,8 @@ select:focus-visible {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 48px;
-  padding: 3px 0;
+  min-height: 52px;
+  padding: 6px 0 2px;
   border-radius: 999px;
   opacity: 1;
   transition:
@@ -467,8 +469,13 @@ select:focus-visible {
 
 .sheet-body {
   min-height: 0;
+  display: grid;
+  gap: 14px;
   overflow: hidden;
-  border-top: 1px solid rgba(19, 33, 41, 0.08);
+  padding: 12px 16px 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.12)),
+    linear-gradient(135deg, rgba(89, 140, 146, 0.08), transparent 52%);
 }
 
 .sheet-scroll {
@@ -477,7 +484,7 @@ select:focus-visible {
   min-height: 0;
   max-height: 100%;
   overflow: auto;
-  padding: 18px 16px 18px;
+  padding: 0;
 }
 
 .sheet-scroll::-webkit-scrollbar {
@@ -783,13 +790,11 @@ select:focus-visible {
 .panel-section {
   display: grid;
   gap: 16px;
-  padding: 18px;
-  border: 1px solid rgba(19, 33, 41, 0.08);
-  border-radius: 26px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.44)),
-    rgba(255, 255, 255, 0.34);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .panel-section-header {
@@ -1135,14 +1140,15 @@ select:focus-visible {
     grid-column: 1 / -1;
   }
 
-  .field-grid .field:nth-child(-n + 2) .field-control::after {
-    right: 10px;
-    font-size: 0.8rem;
+.field-grid .field:nth-child(-n + 2) .field-control::after {
+    right: 8px;
+    font-size: 0.72rem;
   }
 
   .field-grid .field:nth-child(-n + 2) .field-control select {
-    padding: 0 28px 0 12px;
-    font-size: 0.88rem;
+    padding: 0 22px 0 10px;
+    font-size: 0.82rem;
+    letter-spacing: -0.01em;
   }
 
   .utility-row {
@@ -1232,8 +1238,13 @@ select:focus-visible {
     padding: 20px;
   }
 
+  .sheet-body {
+    gap: 18px;
+    padding: 20px;
+  }
+
   .sheet-scroll {
-    padding: 0 20px 20px;
+    padding: 0;
   }
 
   .summary-spotlight {
