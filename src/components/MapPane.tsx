@@ -33,6 +33,22 @@ const MARKER_COLOR_EXPRESSION: ExpressionSpecification = [
   '#f07f45',
 ]
 
+const ACTIVE_HALO_COLOR_EXPRESSION: ExpressionSpecification = [
+  'match',
+  ['get', 'accessibilityScore'],
+  1,
+  'rgba(47, 143, 115, 0.24)',
+  2,
+  'rgba(132, 173, 68, 0.24)',
+  3,
+  'rgba(210, 173, 66, 0.24)',
+  4,
+  'rgba(240, 127, 69, 0.24)',
+  5,
+  'rgba(200, 82, 77, 0.24)',
+  'rgba(240, 127, 69, 0.24)',
+]
+
 const EMPTY_COLLECTION: FeatureCollection = {
   type: 'FeatureCollection',
   features: [],
@@ -176,29 +192,33 @@ export function MapPane({
             },
           })
 
-          map.addLayer({
-            id: 'pokelid-active',
-            type: 'circle',
-            source: 'pokelids',
-            filter: ['==', ['get', 'manholeNo'], '__none__'],
-            paint: {
-              'circle-color': 'rgba(255,255,255,0)',
-              'circle-radius': [
-                'interpolate',
-                ['linear'],
-                ['zoom'],
-                4,
-                11,
-                7,
-                16,
-                10,
-                22,
-              ],
-              'circle-stroke-color': '#132129',
-              'circle-stroke-opacity': 0.92,
-              'circle-stroke-width': 2.4,
+          map.addLayer(
+            {
+              id: 'pokelid-active',
+              type: 'circle',
+              source: 'pokelids',
+              filter: ['==', ['get', 'manholeNo'], '__none__'],
+              paint: {
+                'circle-color': ACTIVE_HALO_COLOR_EXPRESSION,
+                'circle-blur': 0.16,
+                'circle-radius': [
+                  'interpolate',
+                  ['linear'],
+                  ['zoom'],
+                  4,
+                  8.8,
+                  7,
+                  12.2,
+                  10,
+                  16.2,
+                ],
+                'circle-stroke-color': 'rgba(250, 247, 238, 0.74)',
+                'circle-stroke-opacity': 0.86,
+                'circle-stroke-width': 1.1,
+              },
             },
-          })
+            'pokelid-points',
+          )
 
           map.addLayer({
             id: 'user-location-ring',
