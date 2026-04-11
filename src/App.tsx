@@ -258,7 +258,6 @@ function App() {
         return {
           ...current,
           pref: '',
-          area: '',
         }
       }
 
