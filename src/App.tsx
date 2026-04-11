@@ -171,6 +171,16 @@ function App() {
 
   const allPokemon = [...pokemonMap.values()].sort((left, right) => left.number - right.number)
   const allPrefectures = [...new Set<string>(readyLids.map((lid) => lid.prefName))].sort()
+  const prefectureToArea = new Map<string, string>()
+  for (const lid of readyLids) {
+    if (!prefectureToArea.has(lid.prefName)) {
+      prefectureToArea.set(lid.prefName, lid.area)
+    }
+  }
+
+  const prefecturesForSelectedArea = query.area
+    ? allPrefectures.filter((prefecture) => prefectureToArea.get(prefecture) === query.area)
+    : allPrefectures
   const distanceById = buildDistanceMap(readyLids, userLocation)
   const filteredLids = filterLids(readyLids, query)
   const visibleLids = sortLids(filteredLids, distanceById, nearbyMode, userLocation)
@@ -179,7 +189,6 @@ function App() {
     readyLids.find((lid) => lid.manholeNo === activeId) ??
     null
   const activeDistanceKm = activeLid ? distanceById.get(activeLid.manholeNo) ?? null : null
-  const summaryLid = activeLid ?? (nearbyMode ? visibleLids[0] ?? null : null)
 
   useEffect(() => {
     if (!activeId) {
@@ -220,6 +229,53 @@ function App() {
     setQuery((current) => ({
       ...current,
       [key]: value,
+    }))
+  }
+
+  function handleAreaChange(value: string) {
+    setQuery((current) => {
+      if (!value) {
+        return {
+          ...current,
+          area: '',
+          pref: '',
+        }
+      }
+
+      return {
+        ...current,
+        area: value,
+        pokemon: '',
+        pref:
+          current.pref && prefectureToArea.get(current.pref) === value ? current.pref : '',
+      }
+    })
+  }
+
+  function handlePrefChange(value: string) {
+    setQuery((current) => {
+      if (!value) {
+        return {
+          ...current,
+          pref: '',
+        }
+      }
+
+      return {
+        ...current,
+        area: prefectureToArea.get(value) ?? '',
+        pokemon: '',
+        pref: value,
+      }
+    })
+  }
+
+  function handlePokemonChange(value: string) {
+    setQuery((current) => ({
+      ...current,
+      area: '',
+      pokemon: value,
+      pref: '',
     }))
   }
 
@@ -317,6 +373,8 @@ function App() {
         visibleLids={visibleLids}
       />
 
+      <FloatingSpotCount count={visibleLids.length} />
+
       <header className="topbar">
         <div className="topbar-actions">
           <ControlButton
@@ -356,7 +414,7 @@ function App() {
           collectionOpen && !isDesktopViewport && 'backgrounded',
         )}
       >
-        <div className="sheet-summary">
+        <div className="sheet-body">
           <button
             aria-expanded={mainPanelOpen}
             aria-label={mainPanelOpen ? 'パネルを折りたたむ' : 'パネルを展開する'}
@@ -366,10 +424,6 @@ function App() {
           >
             <span />
           </button>
-
-          <div className="summary-header">
-            <h2>{visibleLids.length} spots</h2>
-          </div>
 
           <div className="summary-legend" aria-label="行きやすさで絞り込む">
             <div className="summary-legend-scale">
@@ -405,42 +459,12 @@ function App() {
             </div>
           </div>
 
-          {summaryLid ? (
-            <SummarySpotlight
-              distanceKm={distanceById.get(summaryLid.manholeNo) ?? null}
-              label={activeLid ? '選択中のポケふた' : '現在地から最寄り'}
-              lid={summaryLid}
-            />
-          ) : null}
-        </div>
-
-        <div className="sheet-body">
           <div className="sheet-scroll">
             <section className="panel-section">
-              <div className="section-heading">
-                <div>
-                  <p className="eyebrow">Filters</p>
-                  <h3>絞り込み</h3>
-                </div>
-                <p>一覧と地図に同じ条件が反映されます。</p>
-              </div>
-
               <div className="field-grid">
                 <FilterSelect
-                  label="都道府県"
-                  onChange={(value) => setQueryValue('pref', value)}
-                  options={[
-                    { label: 'すべての都道府県', value: '' },
-                    ...allPrefectures.map((prefecture) => ({
-                      label: prefecture,
-                      value: prefecture,
-                    })),
-                  ]}
-                  value={query.pref}
-                />
-                <FilterSelect
                   label="エリア"
-                  onChange={(value) => setQueryValue('area', value)}
+                  onChange={handleAreaChange}
                   options={[
                     { label: 'すべてのエリア', value: '' },
                     ...AREA_OPTIONS.map((area) => ({
@@ -451,8 +475,20 @@ function App() {
                   value={query.area}
                 />
                 <FilterSelect
+                  label="都道府県"
+                  onChange={handlePrefChange}
+                  options={[
+                    { label: 'すべての都道府県', value: '' },
+                    ...prefecturesForSelectedArea.map((prefecture) => ({
+                      label: prefecture,
+                      value: prefecture,
+                    })),
+                  ]}
+                  value={query.pref}
+                />
+                <FilterSelect
                   label="ポケモン"
-                  onChange={(value) => setQueryValue('pokemon', value)}
+                  onChange={handlePokemonChange}
                   options={[
                     { label: 'すべてのポケモン', value: '' },
                     ...allPokemon.map((pokemon) => ({
@@ -471,13 +507,8 @@ function App() {
                   onClick={() => setQueryValue('newOnly', !query.newOnly)}
                   type="button"
                 >
-                  <span>
+                  <span className="toggle-card-copy">
                     <strong>新着のみ表示</strong>
-                    <small>
-                      {query.newOnly
-                        ? '最近公開されたポケふたを表示中'
-                        : 'すべての公開分を表示中'}
-                    </small>
                   </span>
                   <span className="toggle-indicator" aria-hidden="true" />
                 </button>
@@ -504,6 +535,24 @@ function App() {
         visibleLids={visibleLids}
       />
     </main>
+  )
+}
+
+function FloatingSpotCount({ count }: { count: number }) {
+  const formattedCount = new Intl.NumberFormat('en-US').format(count)
+  const label = count === 1 ? 'spot' : 'spots'
+
+  return (
+    <div
+      aria-atomic="true"
+      aria-label={`${formattedCount} ${label}`}
+      aria-live="polite"
+      className="floating-spot-count"
+      role="status"
+    >
+      <span className="floating-spot-count-value">{formattedCount}</span>
+      <span className="floating-spot-count-label">{label}</span>
+    </div>
   )
 }
 
@@ -683,43 +732,6 @@ function CollectionPanel({
         </div>
       </div>
     </section>
-  )
-}
-
-function SummarySpotlight({
-  distanceKm,
-  label,
-  lid,
-}: {
-  distanceKm: number | null
-  label: string
-  lid: PokeLidRecord
-}) {
-  const visual = getAccessibilityVisual(lid.accessibility.score)
-
-  return (
-    <article className="summary-spotlight">
-      <img alt={lid.name} loading="lazy" src={lid.imageUrl} />
-      <div className="summary-spotlight-copy">
-        <div className="summary-spotlight-header">
-          <span>{label}</span>
-          <strong
-            className="score-pill"
-            style={{ '--score-color': visual.color } as CSSProperties}
-          >
-            Reach {lid.accessibility.score}
-          </strong>
-        </div>
-        <h3>{lid.name}</h3>
-        <p>
-          {lid.prefName} · {areaLabel(lid.area)}
-        </p>
-        <div className="summary-spotlight-meta">
-          <span>{getAccessibilityBandLabel(lid.accessibility.band)}</span>
-          {distanceKm !== null ? <span>{formatDistance(distanceKm)}</span> : null}
-        </div>
-      </div>
-    </article>
   )
 }
 
