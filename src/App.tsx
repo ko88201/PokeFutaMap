@@ -317,6 +317,8 @@ function App() {
         visibleLids={visibleLids}
       />
 
+      <FloatingSpotCount count={visibleLids.length} />
+
       <header className="topbar">
         <div className="topbar-actions">
           <ControlButton
@@ -367,10 +369,6 @@ function App() {
             <span />
           </button>
 
-          <div className="summary-header">
-            <h2>{visibleLids.length} spots</h2>
-          </div>
-
           <div className="summary-legend" aria-label="行きやすさで絞り込む">
             <div className="summary-legend-scale">
               {ACCESSIBILITY_VISUALS.map((entry) => (
@@ -417,12 +415,8 @@ function App() {
         <div className="sheet-body">
           <div className="sheet-scroll">
             <section className="panel-section">
-              <div className="section-heading">
-                <div>
-                  <p className="eyebrow">Filters</p>
-                  <h3>絞り込み</h3>
-                </div>
-                <p>一覧と地図に同じ条件が反映されます。</p>
+              <div className="panel-section-header">
+                <h3>絞り込み</h3>
               </div>
 
               <div className="field-grid">
@@ -471,13 +465,8 @@ function App() {
                   onClick={() => setQueryValue('newOnly', !query.newOnly)}
                   type="button"
                 >
-                  <span>
+                  <span className="toggle-card-copy">
                     <strong>新着のみ表示</strong>
-                    <small>
-                      {query.newOnly
-                        ? '最近公開されたポケふたを表示中'
-                        : 'すべての公開分を表示中'}
-                    </small>
                   </span>
                   <span className="toggle-indicator" aria-hidden="true" />
                 </button>
@@ -504,6 +493,24 @@ function App() {
         visibleLids={visibleLids}
       />
     </main>
+  )
+}
+
+function FloatingSpotCount({ count }: { count: number }) {
+  const formattedCount = new Intl.NumberFormat('en-US').format(count)
+  const label = count === 1 ? 'spot' : 'spots'
+
+  return (
+    <div
+      aria-atomic="true"
+      aria-label={`${formattedCount} ${label}`}
+      aria-live="polite"
+      className="floating-spot-count"
+      role="status"
+    >
+      <span className="floating-spot-count-value">{formattedCount}</span>
+      <span className="floating-spot-count-label">{label}</span>
+    </div>
   )
 }
 
