@@ -27,6 +27,7 @@ import type {
   PokeLidRecord,
   QueryState,
   UserLocation,
+  WorkspaceLayoutState,
 } from './types.ts'
 
 type DataState =
@@ -65,10 +66,10 @@ function App() {
   const [isDesktopViewport, setIsDesktopViewport] = useState(
     () => window.innerWidth >= DESKTOP_BREAKPOINT,
   )
-  const [mainPanelOpen, setMainPanelOpen] = useState(
+  const [desktopPanelOpen, setDesktopPanelOpen] = useState(
     () => window.innerWidth >= DESKTOP_BREAKPOINT,
   )
-  const [collectionOpen, setCollectionOpen] = useState(false)
+  const [mobilePanelOpen, setMobilePanelOpen] = useState(false)
   const [nearbyMode, setNearbyMode] = useState(() => getInitialNearbyMode())
   const [locationStatus, setLocationStatus] = useState<LocationStatus>('idle')
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null)
@@ -85,8 +86,8 @@ function App() {
           return current
         }
 
-        setMainPanelOpen(nextIsDesktop)
-        setCollectionOpen(false)
+        setDesktopPanelOpen(nextIsDesktop)
+        setMobilePanelOpen(false)
         return nextIsDesktop
       })
     }
@@ -184,6 +185,10 @@ function App() {
   const distanceById = buildDistanceMap(readyLids, userLocation)
   const filteredLids = filterLids(readyLids, query)
   const visibleLids = sortLids(filteredLids, distanceById, nearbyMode, userLocation)
+  const workspaceLayout: WorkspaceLayoutState = {
+    desktopPanelOpen: isDesktopViewport ? desktopPanelOpen : false,
+    mobilePanelOpen: !isDesktopViewport && mobilePanelOpen,
+  }
   const activeLid =
     visibleLids.find((lid) => lid.manholeNo === activeId) ??
     readyLids.find((lid) => lid.manholeNo === activeId) ??
@@ -288,25 +293,12 @@ function App() {
   }
 
   function handleMainPanelToggle() {
-    setMainPanelOpen((open) => {
-      const nextOpen = !open
-      if (!isDesktopViewport && nextOpen) {
-        setCollectionOpen(false)
-      }
+    if (isDesktopViewport) {
+      setDesktopPanelOpen((open) => !open)
+      return
+    }
 
-      return nextOpen
-    })
-  }
-
-  function handleCollectionToggle() {
-    setCollectionOpen((open) => {
-      const nextOpen = !open
-      if (!isDesktopViewport && nextOpen) {
-        setMainPanelOpen(false)
-      }
-
-      return nextOpen
-    })
+    setMobilePanelOpen((open) => !open)
   }
 
   function handleResetView() {
@@ -347,7 +339,7 @@ function App() {
     setActiveId(manholeNo)
 
     if (!isDesktopViewport) {
-      setCollectionOpen(false)
+      setMobilePanelOpen(false)
     }
   }
 
@@ -361,9 +353,8 @@ function App() {
         activeId={activeLid?.manholeNo ?? null}
         activeLid={activeLid}
         allLids={readyLids}
-        collectionOpen={collectionOpen}
+        layout={workspaceLayout}
         locateSignal={locateSignal}
-        mainPanelOpen={mainPanelOpen}
         onSelect={handleMapSelect}
         popupContent={
           activeLid ? <MapPopupCard distanceKm={activeDistanceKm} lid={activeLid} /> : null
@@ -378,21 +369,16 @@ function App() {
       <header className="topbar">
         <div className="topbar-actions">
           <ControlButton
-            active={mainPanelOpen}
+            active={isDesktopViewport ? desktopPanelOpen : mobilePanelOpen}
+            ariaPressed={isDesktopViewport ? desktopPanelOpen : mobilePanelOpen}
             icon={<FilterIcon />}
             onClick={handleMainPanelToggle}
           >
             絞り込み
           </ControlButton>
           <ControlButton
-            active={collectionOpen}
-            icon={<CollectionIcon />}
-            onClick={handleCollectionToggle}
-          >
-            一覧
-          </ControlButton>
-          <ControlButton
             active={nearbyMode}
+            ariaPressed={nearbyMode}
             icon={<LocateIcon />}
             onClick={handleNearbyToggle}
           >
@@ -406,134 +392,81 @@ function App() {
 
       <AttributionDisclosure />
 
-      <section
-        className={classNames(
-          'sheet',
-          'main-sheet',
-          mainPanelOpen && 'open',
-          collectionOpen && !isDesktopViewport && 'backgrounded',
-        )}
-      >
-        <div className="sheet-body">
-          <button
-            aria-expanded={mainPanelOpen}
-            aria-label={mainPanelOpen ? 'パネルを折りたたむ' : 'パネルを展開する'}
-            className="sheet-handle"
-            onClick={handleMainPanelToggle}
-            type="button"
-          >
-            <span />
-          </button>
+      {isDesktopViewport && desktopPanelOpen ? (
+        <section className="workspace-panel">
+          <div className="workspace-pane workspace-pane-filters">
+            <FilterPaneContent
+              allPokemon={allPokemon}
+              onAccessScoreToggle={(score) => {
+                setQueryValue('accessScores', toggleAccessScore(query.accessScores, score))
+              }}
+              onAreaChange={handleAreaChange}
+              onNewOnlyToggle={() => setQueryValue('newOnly', !query.newOnly)}
+              onPokemonChange={handlePokemonChange}
+              onPrefChange={handlePrefChange}
+              prefecturesForSelectedArea={prefecturesForSelectedArea}
+              query={query}
+              resetFilters={resetFilters}
+            />
+          </div>
 
-          <div className="summary-legend" aria-label="行きやすさで絞り込む">
-            <div className="summary-legend-scale">
-              {ACCESSIBILITY_VISUALS.map((entry) => (
-                <button
-                  aria-label={`${entry.score} ${entry.label}`}
-                  aria-pressed={query.accessScores.includes(entry.score)}
-                  className={classNames(
-                    'summary-legend-item',
-                    query.accessScores.includes(entry.score) && 'active',
-                    query.accessScores.length > 0 &&
-                      !query.accessScores.includes(entry.score) &&
-                      'muted',
-                  )}
-                  key={entry.score}
-                  onClick={() => {
-                    setQueryValue(
-                      'accessScores',
-                      toggleAccessScore(query.accessScores, entry.score),
-                    )
+          <div className="workspace-pane workspace-pane-collection">
+            <CollectionPaneContent
+              activeId={activeLid?.manholeNo ?? null}
+              distanceById={distanceById}
+              nearbyMode={nearbyMode}
+              onSelect={handleListSelect}
+              resetFilters={resetFilters}
+              userLocation={userLocation}
+              visibleLids={visibleLids}
+            />
+          </div>
+        </section>
+      ) : null}
+
+      {!isDesktopViewport ? (
+        <section className={classNames('sheet', 'main-sheet', mobilePanelOpen && 'open')}>
+          <div className="sheet-body">
+            <button
+              aria-expanded={mobilePanelOpen}
+              aria-label={mobilePanelOpen ? 'パネルを折りたたむ' : 'パネルを展開する'}
+              className="sheet-handle"
+              onClick={handleMainPanelToggle}
+              type="button"
+            >
+              <span />
+            </button>
+
+            <div className="sheet-scroll merged-mobile-scroll">
+              <div className="merged-mobile-panel">
+                <FilterPaneContent
+                  allPokemon={allPokemon}
+                  onAccessScoreToggle={(score) => {
+                    setQueryValue('accessScores', toggleAccessScore(query.accessScores, score))
                   }}
-                  title={entry.label}
-                  type="button"
-                >
-                  <span
-                    className="legend-dot"
-                    style={{ '--score-color': entry.color } as CSSProperties}
-                  >
-                    {entry.score}
-                  </span>
-                </button>
-              ))}
+                  onAreaChange={handleAreaChange}
+                  onNewOnlyToggle={() => setQueryValue('newOnly', !query.newOnly)}
+                  onPokemonChange={handlePokemonChange}
+                  onPrefChange={handlePrefChange}
+                  prefecturesForSelectedArea={prefecturesForSelectedArea}
+                  query={query}
+                  resetFilters={resetFilters}
+                />
+                <CollectionPaneContent
+                  activeId={activeLid?.manholeNo ?? null}
+                  distanceById={distanceById}
+                  nearbyMode={nearbyMode}
+                  onSelect={handleListSelect}
+                  resetFilters={resetFilters}
+                  userLocation={userLocation}
+                  visibleLids={visibleLids}
+                  scrollable={false}
+                />
+              </div>
             </div>
           </div>
-
-          <div className="sheet-scroll">
-            <section className="panel-section">
-              <div className="field-grid">
-                <FilterSelect
-                  label="エリア"
-                  onChange={handleAreaChange}
-                  options={[
-                    { label: 'すべてのエリア', value: '' },
-                    ...AREA_OPTIONS.map((area) => ({
-                      label: areaLabel(area),
-                      value: area,
-                    })),
-                  ]}
-                  value={query.area}
-                />
-                <FilterSelect
-                  label="都道府県"
-                  onChange={handlePrefChange}
-                  options={[
-                    { label: 'すべての都道府県', value: '' },
-                    ...prefecturesForSelectedArea.map((prefecture) => ({
-                      label: prefecture,
-                      value: prefecture,
-                    })),
-                  ]}
-                  value={query.pref}
-                />
-                <FilterSelect
-                  label="ポケモン"
-                  onChange={handlePokemonChange}
-                  options={[
-                    { label: 'すべてのポケモン', value: '' },
-                    ...allPokemon.map((pokemon) => ({
-                      label: formatPokemonLabel(pokemon),
-                      value: String(pokemon.number),
-                    })),
-                  ]}
-                  value={query.pokemon}
-                />
-              </div>
-
-              <div className="utility-row">
-                <button
-                  aria-pressed={query.newOnly}
-                  className={classNames('toggle-card', query.newOnly && 'active')}
-                  onClick={() => setQueryValue('newOnly', !query.newOnly)}
-                  type="button"
-                >
-                  <span className="toggle-card-copy">
-                    <strong>新着のみ表示</strong>
-                  </span>
-                  <span className="toggle-indicator" aria-hidden="true" />
-                </button>
-
-                <button className="ghost-action" onClick={resetFilters} type="button">
-                  条件をクリア
-                </button>
-              </div>
-            </section>
-          </div>
-        </div>
-      </section>
-
-      <CollectionPanel
-        activeId={activeLid?.manholeNo ?? null}
-        distanceById={distanceById}
-        isDesktop={isDesktopViewport}
-        nearbyMode={nearbyMode}
-        open={collectionOpen}
-        onClose={() => setCollectionOpen(false)}
-        onSelect={handleListSelect}
-        resetFilters={resetFilters}
-        userLocation={userLocation}
-        visibleLids={visibleLids}
-      />
+        </section>
+      ) : null}
     </main>
   )
 }
@@ -556,19 +489,213 @@ function FloatingSpotCount({ count }: { count: number }) {
   )
 }
 
+function FilterPaneContent({
+  allPokemon,
+  onAccessScoreToggle,
+  onAreaChange,
+  onNewOnlyToggle,
+  onPokemonChange,
+  onPrefChange,
+  prefecturesForSelectedArea,
+  query,
+  resetFilters,
+}: {
+  allPokemon: PokemonEntry[]
+  onAccessScoreToggle: (score: AccessibilityScore) => void
+  onAreaChange: (value: string) => void
+  onNewOnlyToggle: () => void
+  onPokemonChange: (value: string) => void
+  onPrefChange: (value: string) => void
+  prefecturesForSelectedArea: string[]
+  query: QueryState
+  resetFilters: () => void
+}) {
+  return (
+    <div className="filter-pane">
+      <section className="filter-pane-section filter-pane-legend">
+        <div className="summary-legend" aria-label="行きやすさで絞り込む">
+          <div className="summary-legend-scale">
+            {ACCESSIBILITY_VISUALS.map((entry) => (
+              <button
+                aria-label={`${entry.score} ${entry.label}`}
+                aria-pressed={query.accessScores.includes(entry.score)}
+                className={classNames(
+                  'summary-legend-item',
+                  query.accessScores.includes(entry.score) && 'active',
+                  query.accessScores.length > 0 &&
+                    !query.accessScores.includes(entry.score) &&
+                    'muted',
+                )}
+                key={entry.score}
+                onClick={() => onAccessScoreToggle(entry.score)}
+                title={entry.label}
+                type="button"
+              >
+                <span
+                  className="legend-dot"
+                  style={{ '--score-color': entry.color } as CSSProperties}
+                >
+                  {entry.score}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="panel-section filter-pane-form">
+        <div className="field-grid">
+          <FilterSelect
+            label="エリア"
+            onChange={onAreaChange}
+            options={[
+              { label: 'すべてのエリア', value: '' },
+              ...AREA_OPTIONS.map((area) => ({
+                label: areaLabel(area),
+                value: area,
+              })),
+            ]}
+            value={query.area}
+          />
+          <FilterSelect
+            label="都道府県"
+            onChange={onPrefChange}
+            options={[
+              { label: 'すべての都道府県', value: '' },
+              ...prefecturesForSelectedArea.map((prefecture) => ({
+                label: prefecture,
+                value: prefecture,
+              })),
+            ]}
+            value={query.pref}
+          />
+          <FilterSelect
+            label="ポケモン"
+            onChange={onPokemonChange}
+            options={[
+              { label: 'すべてのポケモン', value: '' },
+              ...allPokemon.map((pokemon) => ({
+                label: formatPokemonLabel(pokemon),
+                value: String(pokemon.number),
+              })),
+            ]}
+            value={query.pokemon}
+          />
+        </div>
+
+        <div className="utility-row">
+          <button
+            aria-pressed={query.newOnly}
+            className={classNames('toggle-card', query.newOnly && 'active')}
+            onClick={onNewOnlyToggle}
+            type="button"
+          >
+            <span className="toggle-card-copy">
+              <strong>新着のみ表示</strong>
+            </span>
+            <span className="toggle-indicator" aria-hidden="true" />
+          </button>
+
+          <button className="ghost-action" onClick={resetFilters} type="button">
+            条件をクリア
+          </button>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function CollectionPaneContent({
+  activeId,
+  distanceById,
+  nearbyMode,
+  onSelect,
+  resetFilters,
+  scrollable = true,
+  userLocation,
+  visibleLids,
+}: {
+  activeId: string | null
+  distanceById: Map<string, number>
+  nearbyMode: boolean
+  onSelect: (manholeNo: string) => void
+  resetFilters: () => void
+  scrollable?: boolean
+  userLocation: UserLocation | null
+  visibleLids: PokeLidRecord[]
+}) {
+  const content = (
+    <div className="result-list">
+      {visibleLids.map((lid) => (
+        <button
+          aria-pressed={lid.manholeNo === activeId}
+          className={classNames('result-card', lid.manholeNo === activeId && 'active')}
+          key={lid.manholeNo}
+          onClick={() => onSelect(lid.manholeNo)}
+          type="button"
+        >
+          <div className="result-card-header">
+            <div className="result-image-wrap">
+              <img alt={lid.name} className="result-image" loading="lazy" src={lid.imageUrl} />
+            </div>
+            <div className="result-score">
+              <div>
+                <strong>{lid.name}</strong>
+                <p>
+                  {lid.prefName} · {areaLabel(lid.area)}
+                </p>
+              </div>
+            </div>
+            <div className="result-meta">
+              {lid.isNew ? <span className="inline-badge">新着</span> : null}
+              {nearbyMode && userLocation ? (
+                <span className="distance-pill">
+                  {formatDistance(distanceById.get(lid.manholeNo) ?? null)}
+                </span>
+              ) : null}
+            </div>
+          </div>
+          <p className="result-pokemon">
+            No.{lid.manholeNo} {lid.pokemon.map(formatPokemonLabel).join(' · ')}
+          </p>
+        </button>
+      ))}
+
+      {visibleLids.length === 0 ? (
+        <div className="empty-state">
+          <strong>条件に合うポケふたが見つかりません。</strong>
+          <p>条件を少しゆるめると、結果が戻ります。</p>
+          <button className="ghost-action" onClick={resetFilters} type="button">
+            すべて解除する
+          </button>
+        </div>
+      ) : null}
+    </div>
+  )
+
+  if (!scrollable) {
+    return <div className="collection-inline-list">{content}</div>
+  }
+
+  return <div className="collection-scroll">{content}</div>
+}
+
 function ControlButton({
   active = false,
+  ariaPressed,
   children,
   icon,
   onClick,
 }: {
   active?: boolean
+  ariaPressed?: boolean
   children: ReactNode
   icon: ReactNode
   onClick: () => void
 }) {
   return (
     <button
+      aria-pressed={ariaPressed}
       className={classNames('control-button', active && 'active')}
       onClick={onClick}
       type="button"
@@ -605,112 +732,6 @@ function FilterSelect({
         </select>
       </div>
     </label>
-  )
-}
-
-function CollectionPanel({
-  activeId,
-  distanceById,
-  isDesktop,
-  nearbyMode,
-  open,
-  onClose,
-  onSelect,
-  resetFilters,
-  userLocation,
-  visibleLids,
-}: {
-  activeId: string | null
-  distanceById: Map<string, number>
-  isDesktop: boolean
-  nearbyMode: boolean
-  open: boolean
-  onClose: () => void
-  onSelect: (manholeNo: string) => void
-  resetFilters: () => void
-  userLocation: UserLocation | null
-  visibleLids: PokeLidRecord[]
-}) {
-  return (
-    <section
-      aria-hidden={!open}
-      className={classNames(
-        'collection-panel',
-        open && 'open',
-        isDesktop ? 'desktop' : 'mobile',
-        visibleLids.length === 0 && 'is-empty',
-      )}
-    >
-      <button
-        aria-label="一覧を閉じる"
-        className="collection-backdrop"
-        onClick={onClose}
-        type="button"
-      />
-      <div className="collection-surface">
-        <div className="collection-header">
-          <h3>ポケふた一覧</h3>
-          <button className="collection-close" onClick={onClose} type="button">
-            閉じる
-          </button>
-        </div>
-
-        <p className="collection-subtitle">
-          {nearbyMode && userLocation
-            ? '現在地から近い順に並んでいます。'
-            : '地図と同じ条件で絞り込まれた一覧です。'}
-        </p>
-
-        <div className="collection-scroll">
-          <div className="result-list">
-            {visibleLids.map((lid) => (
-              <button
-                aria-pressed={lid.manholeNo === activeId}
-                className={classNames('result-card', lid.manholeNo === activeId && 'active')}
-                key={lid.manholeNo}
-                onClick={() => onSelect(lid.manholeNo)}
-                type="button"
-              >
-                <div className="result-card-header">
-                  <div className="result-image-wrap">
-                    <img alt={lid.name} className="result-image" loading="lazy" src={lid.imageUrl} />
-                  </div>
-                  <div className="result-score">
-                    <div>
-                      <strong>{lid.name}</strong>
-                      <p>
-                        {lid.prefName} · {areaLabel(lid.area)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="result-meta">
-                    {lid.isNew ? <span className="inline-badge">新着</span> : null}
-                    {nearbyMode && userLocation ? (
-                      <span className="distance-pill">
-                        {formatDistance(distanceById.get(lid.manholeNo) ?? null)}
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-                <p className="result-pokemon">
-                  No.{lid.manholeNo} {lid.pokemon.map(formatPokemonLabel).join(' · ')}
-                </p>
-              </button>
-            ))}
-
-            {visibleLids.length === 0 ? (
-              <div className="empty-state">
-                <strong>条件に合うポケふたが見つかりません。</strong>
-                <p>絞り込み条件を少しゆるめると、一覧と地図がすぐに戻ります。</p>
-                <button className="ghost-action" onClick={resetFilters} type="button">
-                  すべて解除する
-                </button>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      </div>
-    </section>
   )
 }
 
@@ -826,19 +847,6 @@ function FilterIcon() {
     <svg fill="none" viewBox="0 0 24 24">
       <path
         d="M4 7h16M7 12h10M10 17h4"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeWidth="1.8"
-      />
-    </svg>
-  )
-}
-
-function CollectionIcon() {
-  return (
-    <svg fill="none" viewBox="0 0 24 24">
-      <path
-        d="M5 6.5h14M5 12h14M5 17.5h9"
         stroke="currentColor"
         strokeLinecap="round"
         strokeWidth="1.8"

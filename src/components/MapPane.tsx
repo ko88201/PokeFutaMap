@@ -15,7 +15,7 @@ import type {
   PaddingOptions,
 } from 'maplibre-gl'
 import { loadJapaneseFirstMapStyle } from '../lib/map-style.ts'
-import type { PokeLidRecord, UserLocation } from '../types.ts'
+import type { PokeLidRecord, UserLocation, WorkspaceLayoutState } from '../types.ts'
 
 const MARKER_COLOR_EXPRESSION: ExpressionSpecification = [
   'match',
@@ -61,9 +61,8 @@ type MapPaneProps = {
   activeId: string | null
   activeLid: PokeLidRecord | null
   allLids: PokeLidRecord[]
-  collectionOpen: boolean
+  layout: WorkspaceLayoutState
   locateSignal: number
-  mainPanelOpen: boolean
   onSelect: (manholeNo: string | null) => void
   popupContent: ReactNode | null
   resetSignal: number
@@ -75,15 +74,15 @@ export function MapPane({
   activeId,
   activeLid,
   allLids,
-  collectionOpen,
+  layout,
   locateSignal,
-  mainPanelOpen,
   onSelect,
   popupContent,
   resetSignal,
   userLocation,
   visibleLids,
 }: MapPaneProps) {
+  const { desktopPanelOpen, mobilePanelOpen } = layout
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<Map | null>(null)
   const popupRef = useRef<maplibregl.Popup | null>(null)
@@ -107,9 +106,8 @@ export function MapPane({
     const isDesktop = window.innerWidth >= 980
     const popupWidth = isDesktop ? 336 : Math.min(312, container.clientWidth - 24)
     const padding = getPopupSafeInset({
-      collectionOpen,
       isDesktop,
-      mainPanelOpen,
+      layout,
       popupWidth,
     })
     let contentNode = popupContentNode
@@ -357,10 +355,17 @@ export function MapPane({
       map,
       visibleLids.length > 0 ? visibleLids : allLids,
       820,
-      { collectionOpen, mainPanelOpen },
+      layout,
     )
     lastVisibleKeyRef.current = nextKey
-  }, [activeId, allLids, collectionOpen, isMapReady, mainPanelOpen, visibleLids])
+  }, [
+    activeId,
+    allLids,
+    desktopPanelOpen,
+    isMapReady,
+    mobilePanelOpen,
+    visibleLids,
+  ])
 
   useEffect(() => {
     const map = mapRef.current
@@ -394,10 +399,10 @@ export function MapPane({
     map.flyTo({
       center: [activeLid.lng, activeLid.lat],
       duration: 880,
-      padding: getViewportPadding('focus', { collectionOpen, mainPanelOpen }),
+      padding: getViewportPadding('focus', layout),
       zoom: 10.4,
     })
-  }, [activeLid, collectionOpen, isMapReady, mainPanelOpen])
+  }, [activeLid, desktopPanelOpen, isMapReady, mobilePanelOpen])
 
   useEffect(() => {
     if (!isMapReady) {
@@ -405,7 +410,14 @@ export function MapPane({
     }
 
     syncNativePopup()
-  }, [activeLid, collectionOpen, isMapReady, mainPanelOpen, popupContent, popupContentNode])
+  }, [
+    activeLid,
+    desktopPanelOpen,
+    isMapReady,
+    mobilePanelOpen,
+    popupContent,
+    popupContentNode,
+  ])
 
   useEffect(() => {
     const map = mapRef.current
@@ -417,10 +429,17 @@ export function MapPane({
       map,
       visibleLids.length > 0 ? visibleLids : allLids,
       760,
-      { collectionOpen, mainPanelOpen },
+      layout,
       true,
     )
-  }, [allLids, collectionOpen, isMapReady, mainPanelOpen, resetSignal, visibleLids])
+  }, [
+    allLids,
+    desktopPanelOpen,
+    isMapReady,
+    mobilePanelOpen,
+    resetSignal,
+    visibleLids,
+  ])
 
   useEffect(() => {
     const map = mapRef.current
@@ -431,10 +450,16 @@ export function MapPane({
     map.flyTo({
       center: [userLocation.lng, userLocation.lat],
       duration: 900,
-      padding: getViewportPadding('locate', { collectionOpen, mainPanelOpen }),
+      padding: getViewportPadding('locate', layout),
       zoom: 9.8,
     })
-  }, [collectionOpen, isMapReady, locateSignal, mainPanelOpen, userLocation])
+  }, [
+    desktopPanelOpen,
+    isMapReady,
+    locateSignal,
+    mobilePanelOpen,
+    userLocation,
+  ])
 
   return (
     <>
@@ -487,7 +512,7 @@ function fitLids(
   map: Map,
   lids: PokeLidRecord[],
   duration: number,
-  layout: { collectionOpen: boolean; mainPanelOpen: boolean },
+  layout: WorkspaceLayoutState,
   resetOrientation: boolean = false,
 ) {
   const bounds = getBoundsForLids(lids)
@@ -535,14 +560,12 @@ function getVisibleKey(lids: PokeLidRecord[]) {
 
 function getViewportPadding(
   mode: 'fit' | 'focus' | 'locate',
-  layout: { collectionOpen: boolean; mainPanelOpen: boolean },
+  layout: WorkspaceLayoutState,
 ): PaddingOptions {
   const isDesktop = window.innerWidth >= 980
 
   if (isDesktop) {
-    const mainInset = layout.mainPanelOpen ? 456 : 60
-    const collectionInset = layout.collectionOpen ? (layout.mainPanelOpen ? 214 : 316) : 0
-    const left = mainInset + collectionInset
+    const left = getDesktopWorkspaceInset(layout)
 
     if (mode === 'focus') {
       return { top: 124, right: 48, bottom: 56, left }
@@ -553,6 +576,18 @@ function getViewportPadding(
     }
 
     return { top: 124, right: 56, bottom: 56, left: Math.max(180, left - 18) }
+  }
+
+  if (layout.mobilePanelOpen) {
+    if (mode === 'focus') {
+      return { top: 138, right: 24, bottom: 336, left: 24 }
+    }
+
+    if (mode === 'locate') {
+      return { top: 138, right: 24, bottom: 344, left: 24 }
+    }
+
+    return { top: 138, right: 24, bottom: 284, left: 24 }
   }
 
   if (mode === 'focus') {
@@ -567,25 +602,29 @@ function getViewportPadding(
 }
 
 function getPopupSafeInset({
-  collectionOpen,
   isDesktop,
-  mainPanelOpen,
+  layout,
   popupWidth,
 }: {
-  collectionOpen: boolean
   isDesktop: boolean
-  mainPanelOpen: boolean
+  layout: WorkspaceLayoutState
   popupWidth: number
 }) {
   if (isDesktop) {
-    const left =
-      (mainPanelOpen ? 426 : 20) + (collectionOpen ? (mainPanelOpen ? 256 : 388) : 0)
-
     return {
       bottom: 28,
-      left,
+      left: getDesktopWorkspaceInset(layout),
       right: 24,
       top: 118,
+    }
+  }
+
+  if (layout.mobilePanelOpen) {
+    return {
+      bottom: 176,
+      left: 12,
+      right: 12,
+      top: 112 + popupWidth * 0.02,
     }
   }
 
@@ -595,4 +634,21 @@ function getPopupSafeInset({
     right: 12,
     top: 112 + popupWidth * 0.02,
   }
+}
+
+function getDesktopWorkspaceInset(layout: WorkspaceLayoutState) {
+  if (!layout.desktopPanelOpen) {
+    return 24
+  }
+
+  const viewportWidth = window.innerWidth
+  const filterWidth = clamp(viewportWidth * 0.27, 332, 388)
+  const collectionWidth = clamp(viewportWidth * 0.31, 400, 492)
+  const workspaceWidth = filterWidth + collectionWidth
+
+  return 20 + workspaceWidth + 36
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value))
 }

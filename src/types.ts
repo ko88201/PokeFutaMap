@@ -72,6 +72,11 @@ export type UserLocation = {
   lng: number
 }
 
+export type WorkspaceLayoutState = {
+  desktopPanelOpen: boolean
+  mobilePanelOpen: boolean
+}
+
 export type QueryState = {
   area: string
   accessScores: AccessibilityScore[]
