@@ -649,16 +649,10 @@ function CollectionPanel({
       />
       <div className="collection-surface">
         <div className="collection-header">
-          <div>
-            <p className="eyebrow">Collection</p>
-            <h3>ポケふた一覧</h3>
-          </div>
-          <div className="collection-header-actions">
-            <span className="collection-count">{visibleLids.length} spots</span>
-            <button className="collection-close" onClick={onClose} type="button">
-              閉じる
-            </button>
-          </div>
+          <h3>ポケふた一覧</h3>
+          <button className="collection-close" onClick={onClose} type="button">
+            閉じる
+          </button>
         </div>
 
         <p className="collection-subtitle">
@@ -678,17 +672,10 @@ function CollectionPanel({
                 type="button"
               >
                 <div className="result-card-header">
+                  <div className="result-image-wrap">
+                    <img alt={lid.name} className="result-image" loading="lazy" src={lid.imageUrl} />
+                  </div>
                   <div className="result-score">
-                    <span
-                      className="score-badge"
-                      style={
-                        {
-                          '--score-color': getAccessibilityVisual(lid.accessibility.score).color,
-                        } as CSSProperties
-                      }
-                    >
-                      {lid.accessibility.score}
-                    </span>
                     <div>
                       <strong>{lid.name}</strong>
                       <p>
@@ -705,17 +692,9 @@ function CollectionPanel({
                     ) : null}
                   </div>
                 </div>
-                <p className="result-pokemon">{lid.pokemon.map(formatPokemonLabel).join(' · ')}</p>
-                <div className="result-tags">
-                  <span className="band-pill">
-                    {getAccessibilityBandLabel(lid.accessibility.band)}
-                  </span>
-                  {lid.accessibility.reasons.slice(0, 2).map((reason) => (
-                    <span className="reason-pill" key={reason}>
-                      {getAccessibilityReasonLabel(reason)}
-                    </span>
-                  ))}
-                </div>
+                <p className="result-pokemon">
+                  No.{lid.manholeNo} {lid.pokemon.map(formatPokemonLabel).join(' · ')}
+                </p>
               </button>
             ))}
 

@@ -506,19 +506,12 @@ select:focus-visible {
 }
 
 .collection-header h3 {
-  margin: 4px 0 0;
+  margin: 0;
   font: 700 1.18rem/1 var(--display);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.collection-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.collection-count,
 .collection-close {
   display: inline-flex;
   align-items: center;
@@ -900,8 +893,7 @@ select:focus-visible {
 
 .detail-access,
 .detail-tags,
-.detail-actions,
-.result-tags {
+.detail-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -986,14 +978,13 @@ select:focus-visible {
 .result-card-header {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 12px;
 }
 
 .result-score {
-  display: flex;
-  gap: 12px;
   min-width: 0;
+  display: grid;
+  gap: 4px;
 }
 
 .result-score > div {
@@ -1005,24 +996,30 @@ select:focus-visible {
   margin-bottom: 4px;
 }
 
+.result-image-wrap {
+  flex: none;
+  width: 74px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid rgba(19, 33, 41, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 10px 18px rgba(19, 33, 41, 0.08);
+}
+
+.result-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .result-meta {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
-}
-
-.score-badge {
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: var(--score-color);
-  color: #fff;
-  font: 700 0.94rem/1 var(--display);
-  box-shadow: 0 12px 18px rgba(19, 33, 41, 0.16);
+  margin-left: auto;
 }
 
 .empty-state {
@@ -1034,13 +1031,16 @@ select:focus-visible {
   background: rgba(255, 255, 255, 0.54);
 }
 
+.result-pokemon {
+  margin-top: 10px;
+}
+
 .control-button,
 .ghost-action,
 .toggle-card,
 .result-card,
 .map-popup-action,
 .collection-close,
-.collection-count,
   .attribution-line,
   .sheet,
   .collection-surface,
@@ -1071,6 +1071,30 @@ select:focus-visible {
     border-color: rgba(19, 33, 41, 0.22);
     background: rgba(255, 255, 255, 0.9);
     box-shadow: 0 16px 28px rgba(19, 33, 41, 0.12);
+  }
+}
+
+@media (max-width: 639px) {
+  .collection-header {
+    align-items: center;
+  }
+
+  .collection-header h3 {
+    font-size: 1rem;
+  }
+
+  .collection-close {
+    min-height: 34px;
+    padding: 0 12px;
+  }
+
+  .result-image-wrap {
+    width: 64px;
+    border-radius: 16px;
+  }
+
+  .result-card {
+    padding: 12px;
   }
 }
 
@@ -1265,16 +1289,6 @@ select:focus-visible {
 
   .collection-header {
     display: grid;
-  }
-
-  .collection-header-actions {
-    justify-content: space-between;
-  }
-
-  .collection-count,
-  .collection-close {
-    min-height: 36px;
-    padding: 0 12px;
   }
 
   .map-popup-card {
