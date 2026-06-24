@@ -207,6 +207,8 @@ async function fetchFeaturesForBatch(spec, lidsBatch, batchIndex) {
           headers: {
             'content-type': 'text/plain;charset=UTF-8',
             accept: 'application/json',
+            'user-agent':
+              'PokeFutaMap data updater (https://github.com/ko88201/PokeFutaMap)',
           },
           body: query,
           signal: AbortSignal.timeout(90_000),

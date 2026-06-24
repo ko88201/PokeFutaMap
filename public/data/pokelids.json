@@ -2290,7 +2290,7 @@
       ],
       "metrics": {
         "entryAccessModifier": -1.5,
-        "nearestLidKm": 11.31,
+        "nearestLidKm": 11.18,
         "nearbyLids10km": 0,
         "nearestTrainKm": 0.14,
         "nearestBusHubKm": 0.13,
@@ -2333,12 +2333,13 @@
         "airport_nearby",
         "intl_airport_access",
         "shinkansen_access",
-        "gateway_city_access"
+        "gateway_city_access",
+        "clustered_trip"
       ],
       "metrics": {
         "entryAccessModifier": -1.5,
-        "nearestLidKm": 10.68,
-        "nearbyLids10km": 0,
+        "nearestLidKm": 1.18,
+        "nearbyLids10km": 1,
         "nearestTrainKm": 3.49,
         "nearestBusHubKm": 0.12,
         "nearestFerryKm": 12.14,
@@ -12532,8 +12533,8 @@
       ],
       "metrics": {
         "entryAccessModifier": -0.75,
-        "nearestLidKm": 14.73,
-        "nearbyLids10km": 0,
+        "nearestLidKm": 6.18,
+        "nearbyLids10km": 1,
         "nearestTrainKm": 2.55,
         "nearestBusHubKm": 17.56,
         "nearestFerryKm": 247.58,
@@ -21646,8 +21647,8 @@
         "entryAccessModifier": 0,
         "nearestLidKm": 21.68,
         "nearbyLids10km": 0,
-        "nearestTrainKm": 542.06,
-        "nearestBusHubKm": 680.33,
+        "nearestTrainKm": 536.23,
+        "nearestBusHubKm": 545.08,
         "nearestFerryKm": 678.77,
         "nearestAirportKm": 23.07,
         "nearestIntlAirportKm": 299.61,
@@ -21802,7 +21803,7 @@
         "nearbyLids10km": 0,
         "nearestTrainKm": 0.84,
         "nearestBusHubKm": 0.51,
-        "nearestFerryKm": 322.53,
+        "nearestFerryKm": 298.81,
         "nearestAirportKm": 5.05,
         "nearestIntlAirportKm": 24.87,
         "nearestShinkansenKm": 15.88,
@@ -21817,7 +21818,7 @@
     "area": "shikoku",
     "googleMapsUrl": "https://maps.google.com/?q=33.56701662,133.5431367",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/c788095c5594cd56004ce5193f87f011_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 33.56701662,
     "lng": 133.5431367,
     "manholeNo": "449",
@@ -21850,7 +21851,7 @@
         "nearbyLids10km": 0,
         "nearestTrainKm": 0.04,
         "nearestBusHubKm": 0.05,
-        "nearestFerryKm": 851.22,
+        "nearestFerryKm": 486.99,
         "nearestAirportKm": 11.89,
         "nearestIntlAirportKm": 112.45,
         "nearestShinkansenKm": 101.33,
@@ -21865,7 +21866,7 @@
     "area": "shikoku",
     "googleMapsUrl": "https://maps.google.com/?q=32.791142,132.862367",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/3ab25d9876c61cc403ff6fd8bb3987c8_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 32.791142,
     "lng": 132.862367,
     "manholeNo": "450",
@@ -21898,7 +21899,7 @@
         "nearbyLids10km": 0,
         "nearestTrainKm": 96.82,
         "nearestBusHubKm": 88.91,
-        "nearestFerryKm": 884.29,
+        "nearestFerryKm": 594.01,
         "nearestAirportKm": 112.64,
         "nearestIntlAirportKm": 182.99,
         "nearestShinkansenKm": 166.41,
@@ -21913,7 +21914,7 @@
     "area": "shikoku",
     "googleMapsUrl": "https://maps.google.com/?q=33.47986,133.99983",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/902cc23866cd95b207c0938bbefff0dd_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 33.47986,
     "lng": 133.99983,
     "manholeNo": "451",
@@ -21945,7 +21946,7 @@
         "nearbyLids10km": 2,
         "nearestTrainKm": 4.31,
         "nearestBusHubKm": 41.75,
-        "nearestFerryKm": 825.7,
+        "nearestFerryKm": 471.94,
         "nearestAirportKm": 31.55,
         "nearestIntlAirportKm": 145.72,
         "nearestShinkansenKm": 123.46,
@@ -21960,7 +21961,7 @@
     "area": "shikoku",
     "googleMapsUrl": "https://maps.google.com/?q=33.75877,133.59448",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/9c0a595989dd526afbd07bf111d7a2d3_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 33.75877,
     "lng": 133.59448,
     "manholeNo": "452",
@@ -21996,7 +21997,7 @@
         "nearbyLids10km": 1,
         "nearestTrainKm": 6.47,
         "nearestBusHubKm": 19.91,
-        "nearestFerryKm": 833.97,
+        "nearestFerryKm": 466.95,
         "nearestAirportKm": 24.61,
         "nearestIntlAirportKm": 97.65,
         "nearestShinkansenKm": 83.41,
@@ -22011,7 +22012,7 @@
     "area": "shikoku",
     "googleMapsUrl": "https://maps.google.com/?q=33.561104,133.129433",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/b616658313fb3050e2608e53805bbe69_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 33.561104,
     "lng": 133.129433,
     "manholeNo": "453",
@@ -22043,7 +22044,7 @@
         "nearbyLids10km": 0,
         "nearestTrainKm": 24.52,
         "nearestBusHubKm": 0.41,
-        "nearestFerryKm": 881.27,
+        "nearestFerryKm": 510.63,
         "nearestAirportKm": 49.55,
         "nearestIntlAirportKm": 99.2,
         "nearestShinkansenKm": 96.79,
@@ -22058,7 +22059,7 @@
     "area": "tohoku",
     "googleMapsUrl": "https://maps.google.com/?q=37.291536,140.382947",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/31610e9bff9bfc8fdc64683e1e1bc75f_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 37.291536,
     "lng": 140.382947,
     "manholeNo": "454",
@@ -22107,7 +22108,7 @@
     "area": "tohoku",
     "googleMapsUrl": "https://maps.google.com/?q=37.243406,140.243722",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/fc5fefcde24d0eaf98672ed0dc0e7abd_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 37.243406,
     "lng": 140.243722,
     "manholeNo": "455",
@@ -22155,7 +22156,7 @@
     "area": "tohoku",
     "googleMapsUrl": "https://maps.google.com/?q=37.203534,139.916146",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/5d9b7729ce8952e05c6fdedcbf82dcce_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 37.203534,
     "lng": 139.916146,
     "manholeNo": "456",
@@ -22208,7 +22209,7 @@
     "area": "tohoku",
     "googleMapsUrl": "https://maps.google.com/?q=37.585568,139.642677",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/e7dc3b5a9cbd1d327172ad540f6c6b08_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 37.585568,
     "lng": 139.642677,
     "manholeNo": "457",
@@ -22257,11 +22258,11 @@
   },
   {
     "area": "tohoku",
-    "googleMapsUrl": "https://maps.google.com/?q=37.15779,140.31418",
+    "googleMapsUrl": "https://maps.google.com/?q=37.157384,140.314605",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/24d020c935a2ad0492a860df592cb9f2_l.png",
-    "isNew": true,
-    "lat": 37.15779,
-    "lng": 140.31418,
+    "isNew": false,
+    "lat": 37.157384,
+    "lng": 140.314605,
     "manholeNo": "458",
     "name": "福島県/泉崎村",
     "pokemon": [
@@ -22293,15 +22294,15 @@
       ],
       "metrics": {
         "entryAccessModifier": -0.5,
-        "nearestLidKm": 7,
+        "nearestLidKm": 7.04,
         "nearbyLids10km": 2,
-        "nearestTrainKm": 1.37,
-        "nearestBusHubKm": 3.85,
-        "nearestFerryKm": 138.17,
+        "nearestTrainKm": 1.41,
+        "nearestBusHubKm": 3.9,
+        "nearestFerryKm": 138.19,
         "nearestAirportKm": 12.85,
-        "nearestIntlAirportKm": 121.4,
-        "nearestShinkansenKm": 11.79,
-        "nearestGatewayCityKm": 132.38,
+        "nearestIntlAirportKm": 121.42,
+        "nearestShinkansenKm": 11.82,
+        "nearestGatewayCityKm": 132.4,
         "isIsland": false,
         "isMountain": false
       },
@@ -22312,7 +22313,7 @@
     "area": "tohoku",
     "googleMapsUrl": "https://maps.google.com/?q=37.040242,140.50677",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/b530a464344989e265f4a1013337ab42_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 37.040242,
     "lng": 140.50677,
     "manholeNo": "459",
@@ -22363,7 +22364,7 @@
     "area": "tohoku",
     "googleMapsUrl": "https://maps.google.com/?q=37.0802942,140.4146001",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/e2e9702c4eaa677732ff81abb89aa1c7_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 37.0802942,
     "lng": 140.4146001,
     "manholeNo": "460",
@@ -22415,7 +22416,7 @@
     "area": "tohoku",
     "googleMapsUrl": "https://maps.google.com/?q=37.279216,140.633912",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/f674a1951c9a5d26ddb126221756eca1_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 37.279216,
     "lng": 140.633912,
     "manholeNo": "461",
@@ -22467,7 +22468,7 @@
     "area": "tohoku",
     "googleMapsUrl": "https://maps.google.com/?q=37.4099576,140.983206",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/80d89bd52e1edb0d93f1a0cdc06d4757_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 37.4099576,
     "lng": 140.983206,
     "manholeNo": "462",
@@ -22522,7 +22523,7 @@
     "area": "tohoku",
     "googleMapsUrl": "https://maps.google.com/?q=39.138288,141.137353",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/d769d590f73bfec332de82f0a5dd7d06_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 39.138288,
     "lng": 141.137353,
     "manholeNo": "463",
@@ -22558,7 +22559,7 @@
         "nearestLidKm": 7.18,
         "nearbyLids10km": 1,
         "nearestTrainKm": 0.79,
-        "nearestBusHubKm": 91.8,
+        "nearestBusHubKm": 60.61,
         "nearestFerryKm": 91.51,
         "nearestAirportKm": 32.12,
         "nearestIntlAirportKm": 112.68,
@@ -22574,7 +22575,7 @@
     "area": "tohoku",
     "googleMapsUrl": "https://maps.google.com/?q=39.706964,140.874287",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/05aa91a5c54fced8bdf19152189ccd66_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 39.706964,
     "lng": 140.874287,
     "manholeNo": "464",
@@ -22610,7 +22611,7 @@
         "nearestLidKm": 17.71,
         "nearbyLids10km": 0,
         "nearestTrainKm": 3.68,
-        "nearestBusHubKm": 154.5,
+        "nearestBusHubKm": 21.28,
         "nearestFerryKm": 154.85,
         "nearestAirportKm": 38.32,
         "nearestIntlAirportKm": 174.31,
@@ -22626,7 +22627,7 @@
     "area": "tohoku",
     "googleMapsUrl": "https://maps.google.com/?q=39.6135292,141.1498184",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/28333d9283ea549934e01301b4fe5b97_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 39.6135292,
     "lng": 141.1498184,
     "manholeNo": "465",
@@ -22661,9 +22662,9 @@
       "metrics": {
         "entryAccessModifier": -0.5,
         "nearestLidKm": 6.59,
-        "nearbyLids10km": 1,
+        "nearbyLids10km": 2,
         "nearestTrainKm": 0.14,
-        "nearestBusHubKm": 144.42,
+        "nearestBusHubKm": 7.95,
         "nearestFerryKm": 144.25,
         "nearestAirportKm": 20.76,
         "nearestIntlAirportKm": 165.12,
@@ -22679,7 +22680,7 @@
     "area": "tohoku",
     "googleMapsUrl": "https://maps.google.com/?q=39.200006,141.112971",
     "imageUrl": "https://local.pokemon.jp/img/p/manhole/bc9b6ce686085c3e074bd69dc23dee60_l.png",
-    "isNew": true,
+    "isNew": false,
     "lat": 39.200006,
     "lng": 141.112971,
     "manholeNo": "466",
@@ -22716,12 +22717,419 @@
         "nearestLidKm": 7.18,
         "nearbyLids10km": 3,
         "nearestTrainKm": 0,
-        "nearestBusHubKm": 98.35,
+        "nearestBusHubKm": 53.77,
         "nearestFerryKm": 98.16,
         "nearestAirportKm": 25.33,
         "nearestIntlAirportKm": 119.12,
         "nearestShinkansenKm": 8.94,
         "nearestGatewayCityKm": 106.41,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "tohoku",
+    "googleMapsUrl": "https://maps.google.com/?q=39.694005,141.128421",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/950280bab6a52375f60a30456007e6e9_l.png",
+    "isNew": false,
+    "lat": 39.694005,
+    "lng": 141.128421,
+    "manholeNo": "467",
+    "name": "岩手県/盛岡市",
+    "pokemon": [
+      {
+        "name": "小拳石",
+        "number": 74
+      },
+      {
+        "name": "岩狗狗",
+        "number": 744
+      },
+      {
+        "name": "鬃岩狼人",
+        "number": 745
+      }
+    ],
+    "prefName": "岩手県",
+    "prefSlug": "iwate",
+    "publishStartDate": "2026-04-09 13:45:00",
+    "searchKeywords": "Geodude\nRockruff\nLycanroc\n\n岩手県",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/467/",
+    "accessibility": {
+      "score": 2,
+      "band": "fair",
+      "reasons": [
+        "station_nearby",
+        "shinkansen_access"
+      ],
+      "metrics": {
+        "entryAccessModifier": -0.75,
+        "nearestLidKm": 6.18,
+        "nearbyLids10km": 2,
+        "nearestTrainKm": 1.02,
+        "nearestBusHubKm": 0.31,
+        "nearestFerryKm": 153.06,
+        "nearestAirportKm": 29.68,
+        "nearestIntlAirportKm": 173.8,
+        "nearestShinkansenKm": 1.02,
+        "nearestGatewayCityKm": 160.85,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "chubu",
+    "googleMapsUrl": "https://maps.google.com/?q=37.087801,136.923564",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/f1da1d7cec53987ff936da3fbd11f18f_l.png",
+    "isNew": false,
+    "lat": 37.087801,
+    "lng": 136.923564,
+    "manholeNo": "468",
+    "name": "石川県/七尾市",
+    "pokemon": [
+      {
+        "name": "蚊香蝌蚪",
+        "number": 60
+      },
+      {
+        "name": "暴鯉龍",
+        "number": 130
+      },
+      {
+        "name": "蚊香蛙皇",
+        "number": 186
+      }
+    ],
+    "prefName": "石川県",
+    "prefSlug": "ishikawa",
+    "publishStartDate": "2026-04-16 14:30:00",
+    "searchKeywords": "Politoed\nGyarados\nPoliwag\n\n石川県\n七尾市",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/468/",
+    "accessibility": {
+      "score": 2,
+      "band": "fair",
+      "reasons": [
+        "station_nearby",
+        "airport_nearby"
+      ],
+      "metrics": {
+        "entryAccessModifier": 0,
+        "nearestLidKm": 15.71,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 1.45,
+        "nearestBusHubKm": 0.1,
+        "nearestFerryKm": 17.35,
+        "nearestAirportKm": 23.2,
+        "nearestIntlAirportKm": 248.13,
+        "nearestShinkansenKm": 40.89,
+        "nearestGatewayCityKm": 213.21,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "chubu",
+    "googleMapsUrl": "https://maps.google.com/?q=37.389147,136.906156",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/5bde37f1ca046581e26582ecfca9bdcd_l.png",
+    "isNew": false,
+    "lat": 37.389147,
+    "lng": 136.906156,
+    "manholeNo": "469",
+    "name": "石川県/輪島市",
+    "pokemon": [
+      {
+        "name": "火紅不倒翁",
+        "number": 554
+      },
+      {
+        "name": "甲賀忍蛙",
+        "number": 658
+      }
+    ],
+    "prefName": "石川県",
+    "prefSlug": "ishikawa",
+    "publishStartDate": "2026-04-16 14:30:00",
+    "searchKeywords": "Darumaka\nGreninja\n\n石川県\n輪島市",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/469/",
+    "accessibility": {
+      "score": 3,
+      "band": "moderate",
+      "reasons": [
+        "bus_access",
+        "airport_nearby"
+      ],
+      "metrics": {
+        "entryAccessModifier": 0,
+        "nearestLidKm": 17.89,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 17.91,
+        "nearestBusHubKm": 0.01,
+        "nearestFerryKm": 1.23,
+        "nearestAirportKm": 11.81,
+        "nearestIntlAirportKm": 281.56,
+        "nearestShinkansenKm": 74.23,
+        "nearestGatewayCityKm": 246.69,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "chubu",
+    "googleMapsUrl": "https://maps.google.com/?q=37.39454,137.240367",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/13e5c3a4028ded1bfa96f4b816bfe631_l.png",
+    "isNew": false,
+    "lat": 37.39454,
+    "lng": 137.240367,
+    "manholeNo": "470",
+    "name": "石川県/珠洲市",
+    "pokemon": [
+      {
+        "name": "愛心魚",
+        "number": 370
+      },
+      {
+        "name": "仙子伊布",
+        "number": 700
+      }
+    ],
+    "prefName": "石川県",
+    "prefSlug": "ishikawa",
+    "publishStartDate": "2026-04-16 14:30:00",
+    "searchKeywords": "Luvdisc\nSylveon\n\n石川県\n珠洲市",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/470/",
+    "accessibility": {
+      "score": 3,
+      "band": "moderate",
+      "reasons": [
+        "station_nearby"
+      ],
+      "metrics": {
+        "entryAccessModifier": 0,
+        "nearestLidKm": 11.23,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 2.36,
+        "nearestBusHubKm": 0.33,
+        "nearestFerryKm": 29.92,
+        "nearestAirportKm": 26.8,
+        "nearestIntlAirportKm": 284.71,
+        "nearestShinkansenKm": 61.67,
+        "nearestGatewayCityKm": 249.36,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "chubu",
+    "googleMapsUrl": "https://maps.google.com/?q=37.139152,136.724847",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/5a893a52dcdef186d0629ca2c52a7546_l.png",
+    "isNew": false,
+    "lat": 37.139152,
+    "lng": 136.724847,
+    "manholeNo": "471",
+    "name": "石川県/志賀町",
+    "pokemon": [
+      {
+        "name": "櫻花魚",
+        "number": 368
+      },
+      {
+        "name": "電海燕",
+        "number": 940
+      }
+    ],
+    "prefName": "石川県",
+    "prefSlug": "ishikawa",
+    "publishStartDate": "2026-04-16 14:30:00",
+    "searchKeywords": "Wattrel\nGorebyss\n\n石川県\n志賀町",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/471/",
+    "accessibility": {
+      "score": 4,
+      "band": "hard",
+      "reasons": [],
+      "metrics": {
+        "entryAccessModifier": 0,
+        "nearestLidKm": 18.52,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 7.6,
+        "nearestBusHubKm": 17.84,
+        "nearestFerryKm": 4.7,
+        "nearestAirportKm": 27.34,
+        "nearestIntlAirportKm": 253.72,
+        "nearestShinkansenKm": 52.46,
+        "nearestGatewayCityKm": 219.33,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "chubu",
+    "googleMapsUrl": "https://maps.google.com/?q=37.228298,136.905007",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/87a3fd9365e386e00d23128242ee50b4_l.png",
+    "isNew": false,
+    "lat": 37.228298,
+    "lng": 136.905007,
+    "manholeNo": "472",
+    "name": "石川県/穴水町",
+    "pokemon": [
+      {
+        "name": "卡比獸",
+        "number": 143
+      },
+      {
+        "name": "正電拍拍",
+        "number": 311
+      },
+      {
+        "name": "負電拍拍",
+        "number": 312
+      }
+    ],
+    "prefName": "石川県",
+    "prefSlug": "ishikawa",
+    "publishStartDate": "2026-04-16 14:30:00",
+    "searchKeywords": "Snorlax\nPlusle\nMinun\n\n石川県\n穴水町",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/472/",
+    "accessibility": {
+      "score": 2,
+      "band": "fair",
+      "reasons": [
+        "station_nearby",
+        "airport_nearby"
+      ],
+      "metrics": {
+        "entryAccessModifier": 0,
+        "nearestLidKm": 15.71,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 0.05,
+        "nearestBusHubKm": 0.04,
+        "nearestFerryKm": 19.03,
+        "nearestAirportKm": 9.01,
+        "nearestIntlAirportKm": 263.68,
+        "nearestShinkansenKm": 56.55,
+        "nearestGatewayCityKm": 228.8,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "chubu",
+    "googleMapsUrl": "https://maps.google.com/?q=37.333975,137.138718",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/e839dd22163b193f2e7d8c3db59ee6ec_l.png",
+    "isNew": false,
+    "lat": 37.333975,
+    "lng": 137.138718,
+    "manholeNo": "473",
+    "name": "石川県/能登町",
+    "pokemon": [
+      {
+        "name": "蓮葉童子",
+        "number": 270
+      },
+      {
+        "name": "毒薔薇",
+        "number": 315
+      },
+      {
+        "name": "小隕星",
+        "number": 774
+      }
+    ],
+    "prefName": "石川県",
+    "prefSlug": "ishikawa",
+    "publishStartDate": "2026-04-16 14:30:00",
+    "searchKeywords": "Roselia\nMinior\nLotad\n\n石川県\n能登町",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/473/",
+    "accessibility": {
+      "score": 3,
+      "band": "moderate",
+      "reasons": [
+        "airport_nearby"
+      ],
+      "metrics": {
+        "entryAccessModifier": 0,
+        "nearestLidKm": 11.23,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 9.74,
+        "nearestBusHubKm": 10.42,
+        "nearestFerryKm": 22.22,
+        "nearestAirportKm": 16.01,
+        "nearestIntlAirportKm": 276.9,
+        "nearestShinkansenKm": 59.47,
+        "nearestGatewayCityKm": 241.65,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "tohoku",
+    "googleMapsUrl": "https://maps.google.com/?q=38.182602,140.956528",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/0dfe96c54ef7f6271d17c9ea3fb43e65_l.png",
+    "isNew": false,
+    "lat": 38.182602,
+    "lng": 140.956528,
+    "manholeNo": "474",
+    "name": "宮城県/仙台市",
+    "pokemon": [
+      {
+        "name": "拉普拉斯",
+        "number": 131
+      },
+      {
+        "name": "燈籠魚",
+        "number": 170
+      },
+      {
+        "name": "吼吼鯨",
+        "number": 320
+      },
+      {
+        "name": "海地鼠",
+        "number": 960
+      }
+    ],
+    "prefName": "宮城県",
+    "prefSlug": "miyagi",
+    "publishStartDate": "2026-04-23 14:00:00",
+    "searchKeywords": "Lapras\nChinchou\nWailmer\nWiglett\n\n宮城県\n仙台市",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/474/",
+    "accessibility": {
+      "score": 1,
+      "band": "easy",
+      "reasons": [
+        "station_nearby",
+        "airport_nearby",
+        "intl_airport_access",
+        "shinkansen_access",
+        "gateway_city_access",
+        "clustered_trip"
+      ],
+      "metrics": {
+        "entryAccessModifier": -1.5,
+        "nearestLidKm": 1.18,
+        "nearbyLids10km": 1,
+        "nearestTrainKm": 4.26,
+        "nearestBusHubKm": 0.22,
+        "nearestFerryKm": 10.98,
+        "nearestAirportKm": 6.2,
+        "nearestIntlAirportKm": 5.89,
+        "nearestShinkansenKm": 10.8,
+        "nearestGatewayCityKm": 10.78,
         "isIsland": false,
         "isMountain": false
       },
