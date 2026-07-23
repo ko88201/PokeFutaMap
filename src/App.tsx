@@ -62,7 +62,9 @@ const PUBLIC_LITE_MODE = import.meta.env.VITE_PUBLIC_LITE_MODE === 'true'
 
 function App() {
   const [dataState, setDataState] = useState<DataState>({ status: 'loading' })
-  const [query, setQuery] = useState<QueryState>(() => getInitialQueryState())
+  const [query, setQuery] = useState<QueryState>(() =>
+    PUBLIC_LITE_MODE ? DEFAULT_QUERY : getInitialQueryState(),
+  )
   const [activeId, setActiveId] = useState<string | null>(null)
   const [isDesktopViewport, setIsDesktopViewport] = useState(
     () => window.innerWidth >= DESKTOP_BREAKPOINT,
@@ -71,7 +73,9 @@ function App() {
     () => window.innerWidth >= DESKTOP_BREAKPOINT,
   )
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false)
-  const [nearbyMode, setNearbyMode] = useState(() => getInitialNearbyMode())
+  const [nearbyMode, setNearbyMode] = useState(() =>
+    PUBLIC_LITE_MODE ? false : getInitialNearbyMode(),
+  )
   const [locationStatus, setLocationStatus] = useState<LocationStatus>('idle')
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null)
   const [resetSignal, setResetSignal] = useState(0)
@@ -187,8 +191,8 @@ function App() {
   const filteredLids = filterLids(readyLids, query)
   const visibleLids = sortLids(filteredLids, distanceById, nearbyMode, userLocation)
   const workspaceLayout: WorkspaceLayoutState = {
-    desktopPanelOpen: isDesktopViewport ? desktopPanelOpen : false,
-    mobilePanelOpen: !isDesktopViewport && mobilePanelOpen,
+    desktopPanelOpen: !PUBLIC_LITE_MODE && isDesktopViewport ? desktopPanelOpen : false,
+    mobilePanelOpen: !PUBLIC_LITE_MODE && !isDesktopViewport && mobilePanelOpen,
   }
   const activeLid =
     visibleLids.find((lid) => lid.manholeNo === activeId) ??
@@ -365,18 +369,20 @@ function App() {
         visibleLids={visibleLids}
       />
 
-      <FloatingSpotCount count={visibleLids.length} />
+      {!PUBLIC_LITE_MODE ? <FloatingSpotCount count={visibleLids.length} /> : null}
 
       <header className="topbar">
         <div className="topbar-actions">
-          <ControlButton
-            active={isDesktopViewport ? desktopPanelOpen : mobilePanelOpen}
-            ariaPressed={isDesktopViewport ? desktopPanelOpen : mobilePanelOpen}
-            icon={<FilterIcon />}
-            onClick={handleMainPanelToggle}
-          >
-            絞り込み
-          </ControlButton>
+          {!PUBLIC_LITE_MODE ? (
+            <ControlButton
+              active={isDesktopViewport ? desktopPanelOpen : mobilePanelOpen}
+              ariaPressed={isDesktopViewport ? desktopPanelOpen : mobilePanelOpen}
+              icon={<FilterIcon />}
+              onClick={handleMainPanelToggle}
+            >
+              絞り込み
+            </ControlButton>
+          ) : null}
           <ControlButton
             active={nearbyMode}
             ariaPressed={nearbyMode}
@@ -385,15 +391,17 @@ function App() {
           >
             {nearbyMode ? '近く順を解除' : '現在地'}
           </ControlButton>
-          <ControlButton icon={<CompassIcon />} onClick={handleResetView}>
-            全体表示
-          </ControlButton>
+          {!PUBLIC_LITE_MODE ? (
+            <ControlButton icon={<CompassIcon />} onClick={handleResetView}>
+              全体表示
+            </ControlButton>
+          ) : null}
         </div>
       </header>
 
       <AttributionDisclosure />
 
-      {isDesktopViewport && desktopPanelOpen ? (
+      {!PUBLIC_LITE_MODE && isDesktopViewport && desktopPanelOpen ? (
         <section className="workspace-panel">
           <div className="workspace-pane workspace-pane-filters">
             <FilterPaneContent
@@ -425,7 +433,7 @@ function App() {
         </section>
       ) : null}
 
-      {!isDesktopViewport ? (
+      {!PUBLIC_LITE_MODE && !isDesktopViewport ? (
         <section className={classNames('sheet', 'main-sheet', mobilePanelOpen && 'open')}>
           <div className="sheet-body">
             <button
