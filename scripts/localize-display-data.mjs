@@ -24,6 +24,7 @@ const PREFECTURE_NAME_JA = {
   miyagi: '宮城県',
   miyazaki: '宮崎県',
   nagasaki: '長崎県',
+  nagano: '長野県',
   nara: '奈良県',
   niigata: '新潟県',
   okayama: '岡山県',

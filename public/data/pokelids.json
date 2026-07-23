@@ -17270,7 +17270,7 @@
       ],
       "metrics": {
         "entryAccessModifier": 0,
-        "nearestLidKm": 58.98,
+        "nearestLidKm": 45.61,
         "nearbyLids10km": 0,
         "nearestTrainKm": 55.63,
         "nearestBusHubKm": 0.5,
@@ -20785,7 +20785,7 @@
       ],
       "metrics": {
         "entryAccessModifier": 0,
-        "nearestLidKm": 61.94,
+        "nearestLidKm": 55.04,
         "nearbyLids10km": 0,
         "nearestTrainKm": 49.6,
         "nearestBusHubKm": 89.4,
@@ -20895,7 +20895,7 @@
       ],
       "metrics": {
         "entryAccessModifier": -0.5,
-        "nearestLidKm": 11.97,
+        "nearestLidKm": 11.74,
         "nearbyLids10km": 0,
         "nearestTrainKm": 0.6,
         "nearestBusHubKm": 0.37,
@@ -21851,7 +21851,7 @@
         "nearbyLids10km": 0,
         "nearestTrainKm": 0.04,
         "nearestBusHubKm": 0.05,
-        "nearestFerryKm": 486.99,
+        "nearestFerryKm": 368.85,
         "nearestAirportKm": 11.89,
         "nearestIntlAirportKm": 112.45,
         "nearestShinkansenKm": 101.33,
@@ -21899,7 +21899,7 @@
         "nearbyLids10km": 0,
         "nearestTrainKm": 96.82,
         "nearestBusHubKm": 88.91,
-        "nearestFerryKm": 594.01,
+        "nearestFerryKm": 303.57,
         "nearestAirportKm": 112.64,
         "nearestIntlAirportKm": 182.99,
         "nearestShinkansenKm": 166.41,
@@ -21946,7 +21946,7 @@
         "nearbyLids10km": 2,
         "nearestTrainKm": 4.31,
         "nearestBusHubKm": 41.75,
-        "nearestFerryKm": 471.94,
+        "nearestFerryKm": 409.75,
         "nearestAirportKm": 31.55,
         "nearestIntlAirportKm": 145.72,
         "nearestShinkansenKm": 123.46,
@@ -21997,7 +21997,7 @@
         "nearbyLids10km": 1,
         "nearestTrainKm": 6.47,
         "nearestBusHubKm": 19.91,
-        "nearestFerryKm": 466.95,
+        "nearestFerryKm": 377.09,
         "nearestAirportKm": 24.61,
         "nearestIntlAirportKm": 97.65,
         "nearestShinkansenKm": 83.41,
@@ -22044,7 +22044,7 @@
         "nearbyLids10km": 0,
         "nearestTrainKm": 24.52,
         "nearestBusHubKm": 0.41,
-        "nearestFerryKm": 510.63,
+        "nearestFerryKm": 330.85,
         "nearestAirportKm": 49.55,
         "nearestIntlAirportKm": 99.2,
         "nearestShinkansenKm": 96.79,
@@ -22866,7 +22866,7 @@
       ],
       "metrics": {
         "entryAccessModifier": 0,
-        "nearestLidKm": 17.89,
+        "nearestLidKm": 11.32,
         "nearbyLids10km": 0,
         "nearestTrainKm": 17.91,
         "nearestBusHubKm": 0.01,
@@ -23010,8 +23010,8 @@
       ],
       "metrics": {
         "entryAccessModifier": 0,
-        "nearestLidKm": 15.71,
-        "nearbyLids10km": 0,
+        "nearestLidKm": 8.81,
+        "nearbyLids10km": 1,
         "nearestTrainKm": 0.05,
         "nearestBusHubKm": 0.04,
         "nearestFerryKm": 19.03,
@@ -23130,6 +23130,553 @@
         "nearestIntlAirportKm": 5.89,
         "nearestShinkansenKm": 10.8,
         "nearestGatewayCityKm": 10.78,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "chubu",
+    "googleMapsUrl": "https://maps.google.com/?q=37.295752,136.957244",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/ebbdbee7f35498be1af93b5dc2f8e6c2_l.png",
+    "isNew": true,
+    "lat": 37.295752,
+    "lng": 136.957244,
+    "manholeNo": "475",
+    "name": "石川県/輪島市",
+    "pokemon": [
+      {
+        "name": "寶貝龍",
+        "number": 371
+      },
+      {
+        "name": "暴飛龍",
+        "number": 373
+      }
+    ],
+    "prefName": "石川県",
+    "prefSlug": "ishikawa",
+    "publishStartDate": "2026-06-25 16:00:00",
+    "searchKeywords": "Bagon\nSalamence\n\n石川県\n輪島市",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/475/",
+    "accessibility": {
+      "score": 3,
+      "band": "moderate",
+      "reasons": [
+        "bus_access",
+        "airport_nearby"
+      ],
+      "metrics": {
+        "entryAccessModifier": 0,
+        "nearestLidKm": 8.81,
+        "nearbyLids10km": 1,
+        "nearestTrainKm": 8.85,
+        "nearestBusHubKm": 0.04,
+        "nearestFerryKm": 12.56,
+        "nearestAirportKm": 0.71,
+        "nearestIntlAirportKm": 271.37,
+        "nearestShinkansenKm": 63.43,
+        "nearestGatewayCityKm": 236.39,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "kyushu",
+    "googleMapsUrl": "https://maps.google.com/?q=34.202685,129.289139",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/7cab4fbef67520a2aa892e78044ba411_l.png",
+    "isNew": true,
+    "lat": 34.202685,
+    "lng": 129.289139,
+    "manholeNo": "477",
+    "name": "長崎県/対馬市",
+    "pokemon": [
+      {
+        "name": "電龍",
+        "number": 181
+      },
+      {
+        "name": "斗笠菇",
+        "number": 286
+      },
+      {
+        "name": "酷豹",
+        "number": 510
+      }
+    ],
+    "prefName": "長崎県",
+    "prefSlug": "nagasaki",
+    "publishStartDate": "2026-06-28 12:30:00",
+    "searchKeywords": "Ampharos\nLiepard\nBreloom\n\n長崎県\n対馬市",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/477/",
+    "accessibility": {
+      "score": 3,
+      "band": "moderate",
+      "reasons": [
+        "bus_access",
+        "ferry_access",
+        "airport_nearby"
+      ],
+      "metrics": {
+        "entryAccessModifier": 0,
+        "nearestLidKm": 55.04,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 116.78,
+        "nearestBusHubKm": 0.1,
+        "nearestFerryKm": 0.56,
+        "nearestAirportKm": 9.9,
+        "nearestIntlAirportKm": 127.29,
+        "nearestShinkansenKm": 124.67,
+        "nearestGatewayCityKm": 124.64,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "kyushu",
+    "googleMapsUrl": "https://maps.google.com/?q=32.641898,128.847861",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/1fd094dccc46d6d5a016ab6fc88a5ebf_l.png",
+    "isNew": true,
+    "lat": 32.641898,
+    "lng": 128.847861,
+    "manholeNo": "478",
+    "name": "長崎県/五島市",
+    "pokemon": [
+      {
+        "name": "咩利羊",
+        "number": 179
+      },
+      {
+        "name": "茸茸羊",
+        "number": 180
+      },
+      {
+        "name": "電龍",
+        "number": 181
+      }
+    ],
+    "prefName": "長崎県",
+    "prefSlug": "nagasaki",
+    "publishStartDate": "2026-06-28 12:30:00",
+    "searchKeywords": "Ampharos\nFlaaffy\nMareep\n\n長崎県\n五島市",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/478/",
+    "accessibility": {
+      "score": 4,
+      "band": "hard",
+      "reasons": [
+        "airport_nearby"
+      ],
+      "metrics": {
+        "entryAccessModifier": 0,
+        "nearestLidKm": 45.61,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 101.75,
+        "nearestBusHubKm": 178.41,
+        "nearestFerryKm": 4.35,
+        "nearestAirportKm": 3.1,
+        "nearestIntlAirportKm": 182.51,
+        "nearestShinkansenKm": 96.33,
+        "nearestGatewayCityKm": 180.46,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "kyushu",
+    "googleMapsUrl": "https://maps.google.com/?q=33.036768,129.637485",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/4543d040f87f6f6edbc37f69e73abde7_l.png",
+    "isNew": true,
+    "lat": 33.036768,
+    "lng": 129.637485,
+    "manholeNo": "479",
+    "name": "長崎県/西海市",
+    "pokemon": [
+      {
+        "name": "電龍",
+        "number": 181
+      },
+      {
+        "name": "海兔獸",
+        "number": 423
+      },
+      {
+        "name": "大電海燕",
+        "number": 941
+      }
+    ],
+    "prefName": "長崎県",
+    "prefSlug": "nagasaki",
+    "publishStartDate": "2026-06-28 12:30:00",
+    "searchKeywords": "Ampharos\nKilowattrel\nGastrodon\n\n長崎県\n西海市",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/479/",
+    "accessibility": {
+      "score": 4,
+      "band": "hard",
+      "reasons": [],
+      "metrics": {
+        "entryAccessModifier": 0,
+        "nearestLidKm": 16.29,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 16.04,
+        "nearestBusHubKm": 133.69,
+        "nearestFerryKm": 1.41,
+        "nearestAirportKm": 28.98,
+        "nearestIntlAirportKm": 97.18,
+        "nearestShinkansenKm": 31.96,
+        "nearestGatewayCityKm": 95.29,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "kyushu",
+    "googleMapsUrl": "https://maps.google.com/?q=33.141048,129.910858",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/273a40e9db77b08bc4a8aadd8d8f5d6d_l.png",
+    "isNew": true,
+    "lat": 33.141048,
+    "lng": 129.910858,
+    "manholeNo": "480",
+    "name": "長崎県/波佐見町",
+    "pokemon": [
+      {
+        "name": "凱羅斯",
+        "number": 127
+      },
+      {
+        "name": "電龍",
+        "number": 181
+      },
+      {
+        "name": "巨鉗螳螂",
+        "number": 212
+      }
+    ],
+    "prefName": "長崎県",
+    "prefSlug": "nagasaki",
+    "publishStartDate": "2026-06-28 12:30:00",
+    "searchKeywords": "Ampharos\nPinsir\nScizor",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/480/",
+    "accessibility": {
+      "score": 3,
+      "band": "moderate",
+      "reasons": [
+        "airport_nearby",
+        "shinkansen_access"
+      ],
+      "metrics": {
+        "entryAccessModifier": -0.5,
+        "nearestLidKm": 11.74,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 5.44,
+        "nearestBusHubKm": 131.4,
+        "nearestFerryKm": 28.91,
+        "nearestAirportKm": 23.84,
+        "nearestIntlAirportKm": 70.45,
+        "nearestShinkansenKm": 9.05,
+        "nearestGatewayCityKm": 68.8,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "chubu",
+    "googleMapsUrl": "https://maps.google.com/?q=36.06648,138.0511",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/38dbfc1d6e8a42120c2fd6136f511a97_l.png",
+    "isNew": true,
+    "lat": 36.06648,
+    "lng": 138.0511,
+    "manholeNo": "481",
+    "name": "長野県/岡谷市",
+    "pokemon": [
+      {
+        "name": "雪吞蟲",
+        "number": 872
+      },
+      {
+        "name": "雪絨蛾",
+        "number": 873
+      }
+    ],
+    "prefName": "長野県",
+    "prefSlug": "nagano",
+    "publishStartDate": "2026-07-09 15:30:00",
+    "searchKeywords": "Frosmoth\nSnom\n\n長野県\n岡谷市",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/481/",
+    "accessibility": {
+      "score": 2,
+      "band": "fair",
+      "reasons": [
+        "station_nearby",
+        "airport_nearby"
+      ],
+      "metrics": {
+        "entryAccessModifier": 0,
+        "nearestLidKm": 23.66,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 1.24,
+        "nearestBusHubKm": 0.05,
+        "nearestFerryKm": 164.49,
+        "nearestAirportKm": 15.94,
+        "nearestIntlAirportKm": 166.15,
+        "nearestShinkansenKm": 40.8,
+        "nearestGatewayCityKm": 145.24,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "chubu",
+    "googleMapsUrl": "https://maps.google.com/?q=35.882479,137.919057",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/1cd7407c636a3fdfb846915335153d04_l.png",
+    "isNew": true,
+    "lat": 35.882479,
+    "lng": 137.919057,
+    "manholeNo": "482",
+    "name": "長野県/伊那市",
+    "pokemon": [
+      {
+        "name": "達摩狒狒",
+        "number": 555
+      },
+      {
+        "name": "甜冷美后",
+        "number": 763
+      },
+      {
+        "name": "劈斧螳螂",
+        "number": 900
+      }
+    ],
+    "prefName": "長野県",
+    "prefSlug": "nagano",
+    "publishStartDate": "2026-07-09 15:30:00",
+    "searchKeywords": "Kleavor\nDarmanitan\nTsareena\n\n長野県\n伊那市",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/482/",
+    "accessibility": {
+      "score": 4,
+      "band": "hard",
+      "reasons": [],
+      "metrics": {
+        "entryAccessModifier": 0,
+        "nearestLidKm": 13.46,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 5.81,
+        "nearestBusHubKm": 13.46,
+        "nearestFerryKm": 171.85,
+        "nearestAirportKm": 31.56,
+        "nearestIntlAirportKm": 152.21,
+        "nearestShinkansenKm": 64.41,
+        "nearestGatewayCityKm": 122.79,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "chubu",
+    "googleMapsUrl": "https://maps.google.com/?q=36.506032,137.859702",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/b04877fef931bfc2dd4b85cee9758ede_l.png",
+    "isNew": true,
+    "lat": 36.506032,
+    "lng": 137.859702,
+    "manholeNo": "483",
+    "name": "長野県/大町市",
+    "pokemon": [
+      {
+        "name": "迷你龍",
+        "number": 147
+      },
+      {
+        "name": "大牙狸",
+        "number": 399
+      }
+    ],
+    "prefName": "長野県",
+    "prefSlug": "nagano",
+    "publishStartDate": "2026-07-09 15:30:00",
+    "searchKeywords": "Dratini\nBidoof\n\n長野県\n大町市",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/483/",
+    "accessibility": {
+      "score": 2,
+      "band": "fair",
+      "reasons": [
+        "station_nearby"
+      ],
+      "metrics": {
+        "entryAccessModifier": 0,
+        "nearestLidKm": 51.8,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 0.69,
+        "nearestBusHubKm": 0.1,
+        "nearestFerryKm": 120.27,
+        "nearestAirportKm": 38.21,
+        "nearestIntlAirportKm": 202.8,
+        "nearestShinkansenKm": 33.08,
+        "nearestGatewayCityKm": 172.68,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "chubu",
+    "googleMapsUrl": "https://maps.google.com/?q=35.955351,138.474215",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/34adefec6db50af8befe1d98435efa6c_l.png",
+    "isNew": true,
+    "lat": 35.955351,
+    "lng": 138.474215,
+    "manholeNo": "484",
+    "name": "長野県/南牧村",
+    "pokemon": [
+      {
+        "name": "傘電蜥",
+        "number": 694
+      },
+      {
+        "name": "光電傘蜥",
+        "number": 695
+      }
+    ],
+    "prefName": "長野県",
+    "prefSlug": "nagano",
+    "publishStartDate": "2026-07-09 15:30:00",
+    "searchKeywords": "Heliolisk\nHelioptile\n\n長野県\n南牧村",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/484/",
+    "accessibility": {
+      "score": 2,
+      "band": "fair",
+      "reasons": [
+        "station_nearby"
+      ],
+      "metrics": {
+        "entryAccessModifier": 0,
+        "nearestLidKm": 40.01,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 0.04,
+        "nearestBusHubKm": 39.29,
+        "nearestFerryKm": 201.09,
+        "nearestAirportKm": 30.41,
+        "nearestIntlAirportKm": 126.17,
+        "nearestShinkansenKm": 35.85,
+        "nearestGatewayCityKm": 117.09,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "chubu",
+    "googleMapsUrl": "https://maps.google.com/?q=35.935271,137.784559",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/391c9a8f8b3ef650a85d3b05d39e1fd5_l.png",
+    "isNew": true,
+    "lat": 35.935271,
+    "lng": 137.784559,
+    "manholeNo": "485",
+    "name": "長野県/木祖村",
+    "pokemon": [
+      {
+        "name": "帕奇利茲",
+        "number": 417
+      },
+      {
+        "name": "朽木妖",
+        "number": 709
+      },
+      {
+        "name": "稚山雀",
+        "number": 821
+      }
+    ],
+    "prefName": "長野県",
+    "prefSlug": "nagano",
+    "publishStartDate": "2026-07-09 15:30:00",
+    "searchKeywords": "Pachirisu\nTrevenant\nRookidee\n\n長野県\n木祖村",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/485/",
+    "accessibility": {
+      "score": 2,
+      "band": "fair",
+      "reasons": [
+        "station_nearby"
+      ],
+      "metrics": {
+        "entryAccessModifier": 0,
+        "nearestLidKm": 13.46,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 0.49,
+        "nearestBusHubKm": 0.01,
+        "nearestFerryKm": 159.87,
+        "nearestAirportKm": 28.57,
+        "nearestIntlAirportKm": 149.06,
+        "nearestShinkansenKm": 66.14,
+        "nearestGatewayCityKm": 117.9,
+        "isIsland": false,
+        "isMountain": false
+      },
+      "confidence": "estimated"
+    }
+  },
+  {
+    "area": "chubu",
+    "googleMapsUrl": "https://maps.google.com/?q=36.74156,138.41505",
+    "imageUrl": "https://local.pokemon.jp/img/p/manhole/7fe9b42164a7f9fbaeb73ef90a2790ea_l.png",
+    "isNew": true,
+    "lat": 36.74156,
+    "lng": 138.41505,
+    "manholeNo": "486",
+    "name": "長野県/山ノ内町",
+    "pokemon": [
+      {
+        "name": "猴怪",
+        "number": 56
+      },
+      {
+        "name": "冷水猴",
+        "number": 515
+      },
+      {
+        "name": "伽勒爾火紅不倒翁",
+        "number": 554
+      }
+    ],
+    "prefName": "長野県",
+    "prefSlug": "nagano",
+    "publishStartDate": "2026-07-09 15:30:00",
+    "searchKeywords": "Mankey\nDarumaka\nPanpour\n\n長野県\n山ノ内町",
+    "sourceUrl": "https://local.pokemon.jp/manhole/desc/486/",
+    "accessibility": {
+      "score": 2,
+      "band": "fair",
+      "reasons": [
+        "station_nearby",
+        "shinkansen_access"
+      ],
+      "metrics": {
+        "entryAccessModifier": -0.5,
+        "nearestLidKm": 56.05,
+        "nearbyLids10km": 0,
+        "nearestTrainKm": 0.04,
+        "nearestBusHubKm": 0.06,
+        "nearestFerryKm": null,
+        "nearestAirportKm": 77.6,
+        "nearestIntlAirportKm": 180.52,
+        "nearestShinkansenKm": 12.68,
+        "nearestGatewayCityKm": 169.16,
         "isIsland": false,
         "isMountain": false
       },
