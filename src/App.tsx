@@ -8,6 +8,7 @@ import {
 import { MapPane } from './components/MapPane.tsx'
 import {
   areaLabel,
+  buildGoogleNavigationLink,
   classNames,
   getInitialNearbyMode,
   getInitialQueryState,
@@ -16,6 +17,9 @@ import {
 } from './lib/app-helpers.ts'
 import {
   ACCESSIBILITY_VISUALS,
+  getAccessibilityBandLabel,
+  getAccessibilityReasonLabel,
+  getAccessibilityVisual,
 } from './lib/accessibility.ts'
 import type {
   AccessibilityScore,
@@ -54,6 +58,7 @@ const DEFAULT_QUERY: QueryState = {
 }
 
 const DESKTOP_BREAKPOINT = 980
+const PUBLIC_LITE_MODE = import.meta.env.VITE_PUBLIC_LITE_MODE === 'true'
 
 function App() {
   const [dataState, setDataState] = useState<DataState>({ status: 'loading' })
@@ -189,6 +194,7 @@ function App() {
     visibleLids.find((lid) => lid.manholeNo === activeId) ??
     readyLids.find((lid) => lid.manholeNo === activeId) ??
     null
+  const activeDistanceKm = activeLid ? distanceById.get(activeLid.manholeNo) ?? null : null
 
   useEffect(() => {
     if (!activeId) {
@@ -351,7 +357,9 @@ function App() {
         layout={workspaceLayout}
         locateSignal={locateSignal}
         onSelect={handleMapSelect}
-        popupContent={activeLid ? <MapPopupCard lid={activeLid} /> : null}
+        popupContent={
+          activeLid ? <MapPopupCard distanceKm={activeDistanceKm} lid={activeLid} /> : null
+        }
         resetSignal={resetSignal}
         userLocation={nearbyMode ? userLocation : null}
         visibleLids={visibleLids}
@@ -628,6 +636,11 @@ function CollectionPaneContent({
           type="button"
         >
           <div className="result-card-header">
+            {!PUBLIC_LITE_MODE ? (
+              <div className="result-image-wrap">
+                <img alt={lid.name} className="result-image" loading="lazy" src={lid.imageUrl} />
+              </div>
+            ) : null}
             <div className="result-score">
               <div>
                 <strong>{lid.name}</strong>
@@ -725,9 +738,49 @@ function FilterSelect({
   )
 }
 
-function MapPopupCard({ lid }: { lid: PokeLidRecord }) {
+function MapPopupCard({
+  distanceKm,
+  lid,
+}: {
+  distanceKm: number | null
+  lid: PokeLidRecord
+}) {
+  const visual = getAccessibilityVisual(lid.accessibility.score)
+  const popupActions: Array<{
+    ariaLabel: string
+    href: string
+    icon: ReactNode
+    label: string
+  }> = []
+
+  if (lid.sourceUrl) {
+    popupActions.push({
+      ariaLabel: '公式ページを開く',
+      href: lid.sourceUrl,
+      icon: <ExternalLinkIcon />,
+      label: '公式ページ',
+    })
+  }
+
+  if (lid.googleMapsUrl) {
+    popupActions.push({
+      ariaLabel: '地図で開く',
+      href: lid.googleMapsUrl,
+      icon: <MapPinIcon />,
+      label: '地図',
+    })
+  }
+
+  popupActions.push({
+    ariaLabel: 'ナビを開始',
+    href: buildGoogleNavigationLink(lid.lat, lid.lng),
+    icon: <NavigationIcon />,
+    label: 'ナビ',
+  })
+
   return (
-    <article className="map-popup-card">
+    <article className={classNames('map-popup-card', PUBLIC_LITE_MODE && 'public-lite')}>
+      {!PUBLIC_LITE_MODE ? <img alt={lid.name} loading="lazy" src={lid.imageUrl} /> : null}
       <div className="map-popup-copy">
         <div className="map-popup-meta">
           <p className="map-popup-kicker">
@@ -738,6 +791,51 @@ function MapPopupCard({ lid }: { lid: PokeLidRecord }) {
             {lid.pokemon.map(formatPokemonLabel).join(' · ')}
           </p>
         </div>
+
+        {!PUBLIC_LITE_MODE ? (
+          <>
+            <div className="map-popup-badges">
+              <span
+                className="band-pill map-popup-band"
+                style={{ '--score-color': visual.color } as CSSProperties}
+              >
+                {getAccessibilityBandLabel(lid.accessibility.band)}
+              </span>
+              {distanceKm !== null ? (
+                <span className="distance-pill map-popup-meta-chip">
+                  {formatDistance(distanceKm)}
+                </span>
+              ) : null}
+              {lid.isNew ? <span className="inline-badge map-popup-meta-chip">新着</span> : null}
+            </div>
+
+            {lid.accessibility.reasons.length > 0 ? (
+              <div className="map-popup-tags">
+                {lid.accessibility.reasons.slice(0, 2).map((reason) => (
+                  <span className="reason-pill map-popup-tag" key={reason}>
+                    {getAccessibilityReasonLabel(reason)}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+
+            <div aria-label="スポットの操作" className="map-popup-actions" role="group">
+              {popupActions.map((action) => (
+                <a
+                  aria-label={action.ariaLabel}
+                  className="map-popup-action"
+                  href={action.href}
+                  key={action.label}
+                  rel="noreferrer"
+                  target="_blank"
+                  title={action.label}
+                >
+                  {action.icon}
+                </a>
+              ))}
+            </div>
+          </>
+        ) : null}
       </div>
     </article>
   )
@@ -789,6 +887,59 @@ function CompassIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.8"
+      />
+    </svg>
+  )
+}
+
+function ExternalLinkIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path
+        d="M13 5h6v6m-1-5-8.5 8.5"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+      <path
+        d="M10 7H8.4A2.4 2.4 0 0 0 6 9.4v6.2A2.4 2.4 0 0 0 8.4 18h6.2a2.4 2.4 0 0 0 2.4-2.4V14"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  )
+}
+
+function MapPinIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path
+        d="M12 21s6-5.22 6-11a6 6 0 1 0-12 0c0 5.78 6 11 6 11Z"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+      <path
+        d="M12 12.7a2.7 2.7 0 1 0 0-5.4 2.7 2.7 0 0 0 0 5.4Z"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  )
+}
+
+function NavigationIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path
+        d="m13.8 10.2 4.6-4.6-6 15-2.2-6.2L4 12.2l15-6-4.6 4.6-.6-.6Z"
+        fill="currentColor"
       />
     </svg>
   )
