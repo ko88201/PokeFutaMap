@@ -101,6 +101,7 @@ for (let index = 0; index < uniquePokemon.length; index += batchSize) {
 
 const localized = lids.map((lid) => ({
   ...lid,
+  area: normalizeArea(lid.area, lid.prefSlug),
   pokemon: lid.pokemon
     .map((pokemon) => {
       const originalName = typeof pokemon === 'string' ? pokemon : pokemon.name
@@ -119,6 +120,10 @@ const localized = lids.map((lid) => ({
 
 await writeFile(path, `${JSON.stringify(localized, null, 2)}\n`)
 console.log(`Localized ${localized.length} Poké Lid records.`)
+
+function normalizeArea(area, prefSlug) {
+  return area === 'okinawa' || prefSlug === 'okinawa' ? 'kyushu' : area
+}
 
 async function translatePokemon(name) {
   const regionalMatch = name.match(/^(Alolan|Galarian|Hisuian|Paldean)\s+(.+)$/)

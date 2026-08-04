@@ -35,7 +35,7 @@ const japaneseTitles = new Map(
 
 const lids = [...uniqueItems.values()]
   .map((item) => ({
-    area: item.area || '',
+    area: normalizeArea(item.area || '', item.pref_en_name),
     googleMapsUrl: `https://maps.google.com/?q=${item.lat},${item.lng}`,
     imageUrl: new URL(item.picture.url_l, 'https://local.pokemon.jp').toString(),
     isNew: Boolean(item.is_new),
@@ -60,6 +60,10 @@ await writeFile(
   new URL('./pokelids.json', PUBLIC_DATA_DIR),
   `${JSON.stringify(lids, null, 2)}\n`,
 )
+
+function normalizeArea(area, prefSlug) {
+  return area === 'okinawa' || prefSlug === 'okinawa' ? 'kyushu' : area
+}
 
 async function fetchJapaneseLidTitle(manholeNo) {
   try {

@@ -10,11 +10,13 @@ import type { FeatureCollection } from 'geojson'
 import maplibregl, { GeoJSONSource, Map } from 'maplibre-gl'
 import type {
   ExpressionSpecification,
+  FilterSpecification,
   GeoJSONSourceSpecification,
   LngLatBoundsLike,
   PaddingOptions,
 } from 'maplibre-gl'
-import { loadJapaneseFirstMapStyle } from '../lib/map-style.ts'
+import { JAPAN_REGION, loadJapaneseFirstMapStyle } from '../lib/map-style.ts'
+import { PREFECTURE_LABELS } from '../lib/prefecture-labels.ts'
 import type { PokeLidRecord, UserLocation, WorkspaceLayoutState } from '../types.ts'
 
 const MARKER_COLOR_EXPRESSION: ExpressionSpecification = [
@@ -55,7 +57,33 @@ const EMPTY_COLLECTION: FeatureCollection = {
 }
 
 const INTERACTIVE_LAYERS = ['pokelid-points', 'pokelid-active'] as const
+const PREFECTURE_OVERLAY_LAYERS = [
+  'prefecture-boundary-casing',
+  'prefecture-boundary-line',
+  'prefecture-labels',
+] as const
 const POPUP_OFFSET = 18
+const PREFECTURE_BOUNDARY_FILTER = [
+  'all',
+  ['==', ['get', 'admin_level'], 4],
+  ['!=', ['get', 'maritime'], 1],
+  ['!=', ['get', 'disputed'], 1],
+  ['!', ['has', 'claimed_by']],
+  ['within', JAPAN_REGION],
+] as unknown as FilterSpecification
+const PREFECTURE_LABEL_COLLECTION: FeatureCollection = {
+  type: 'FeatureCollection',
+  features: PREFECTURE_LABELS.map((prefecture) => ({
+    type: 'Feature',
+    geometry: {
+      type: 'Point',
+      coordinates: [prefecture.lng, prefecture.lat],
+    },
+    properties: {
+      name: prefecture.name,
+    },
+  })),
+}
 
 type MapPaneProps = {
   activeId: string | null
@@ -66,6 +94,7 @@ type MapPaneProps = {
   onSelect: (manholeNo: string | null) => void
   popupContent: ReactNode | null
   resetSignal: number
+  showPrefectureOverlay: boolean
   userLocation: UserLocation | null
   visibleLids: PokeLidRecord[]
 }
@@ -79,6 +108,7 @@ export function MapPane({
   onSelect,
   popupContent,
   resetSignal,
+  showPrefectureOverlay,
   userLocation,
   visibleLids,
 }: MapPaneProps) {
@@ -199,6 +229,11 @@ export function MapPane({
             data: EMPTY_COLLECTION,
           } satisfies GeoJSONSourceSpecification)
 
+          map.addSource('prefecture-labels', {
+            type: 'geojson',
+            data: PREFECTURE_LABEL_COLLECTION,
+          } satisfies GeoJSONSourceSpecification)
+
           map.addLayer({
             id: 'pokelid-points',
             type: 'circle',
@@ -248,6 +283,122 @@ export function MapPane({
               },
             },
             'pokelid-points',
+          )
+
+          map.addLayer(
+            {
+              id: 'prefecture-boundary-casing',
+              type: 'line',
+              source: 'openmaptiles',
+              'source-layer': 'boundary',
+              filter: PREFECTURE_BOUNDARY_FILTER,
+              layout: {
+                'line-cap': 'round',
+                'line-join': 'round',
+                visibility: 'none',
+              },
+              paint: {
+                'line-color': 'rgba(250, 247, 238, 0.78)',
+                'line-opacity': 0.88,
+                'line-width': [
+                  'interpolate',
+                  ['linear'],
+                  ['zoom'],
+                  4,
+                  1.6,
+                  7,
+                  2.8,
+                  10,
+                  4.4,
+                ],
+              },
+            },
+            'pokelid-active',
+          )
+
+          map.addLayer(
+            {
+              id: 'prefecture-boundary-line',
+              type: 'line',
+              source: 'openmaptiles',
+              'source-layer': 'boundary',
+              filter: PREFECTURE_BOUNDARY_FILTER,
+              layout: {
+                'line-cap': 'round',
+                'line-join': 'round',
+                visibility: 'none',
+              },
+              paint: {
+                'line-color': '#235b81',
+                'line-dasharray': [1.4, 1.1],
+                'line-opacity': [
+                  'interpolate',
+                  ['linear'],
+                  ['zoom'],
+                  4,
+                  0.42,
+                  7,
+                  0.62,
+                  10,
+                  0.74,
+                ],
+                'line-width': [
+                  'interpolate',
+                  ['linear'],
+                  ['zoom'],
+                  4,
+                  0.7,
+                  7,
+                  1.3,
+                  10,
+                  2.2,
+                ],
+              },
+            },
+            'pokelid-active',
+          )
+
+          map.addLayer(
+            {
+              id: 'prefecture-labels',
+              type: 'symbol',
+              source: 'prefecture-labels',
+              layout: {
+                'text-allow-overlap': false,
+                'text-field': ['get', 'name'],
+                'text-font': ['Noto Sans Bold'],
+                'text-ignore-placement': false,
+                'text-padding': 5,
+                'text-size': [
+                  'interpolate',
+                  ['linear'],
+                  ['zoom'],
+                  4,
+                  10.5,
+                  6,
+                  12,
+                  8,
+                  14,
+                ],
+                visibility: 'none',
+              },
+              paint: {
+                'text-color': '#26353a',
+                'text-halo-blur': 0.6,
+                'text-halo-color': 'rgba(250, 247, 238, 0.9)',
+                'text-halo-width': 1.2,
+                'text-opacity': [
+                  'interpolate',
+                  ['linear'],
+                  ['zoom'],
+                  4,
+                  0.72,
+                  6,
+                  0.92,
+                ],
+              },
+            },
+            'pokelid-active',
           )
 
           map.addLayer({
@@ -387,6 +538,15 @@ export function MapPane({
       return
     }
 
+    setPrefectureOverlayVisibility(map, showPrefectureOverlay)
+  }, [isMapReady, showPrefectureOverlay])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !isMapReady) {
+      return
+    }
+
     map.setFilter('pokelid-active', ['==', ['get', 'manholeNo'], activeId ?? '__none__'])
   }, [activeId, isMapReady])
 
@@ -469,6 +629,16 @@ export function MapPane({
       {popupContentNode && popupContent ? createPortal(popupContent, popupContentNode) : null}
     </>
   )
+}
+
+function setPrefectureOverlayVisibility(map: Map, visible: boolean) {
+  const visibility = visible ? 'visible' : 'none'
+
+  for (const layerId of PREFECTURE_OVERLAY_LAYERS) {
+    if (map.getLayer(layerId)) {
+      map.setLayoutProperty(layerId, 'visibility', visibility)
+    }
+  }
 }
 
 function buildLidFeatureCollection(lids: PokeLidRecord[]): FeatureCollection {

@@ -38,7 +38,7 @@ const BOLD_LAYER_IDS = new Set([
   'label_city_capital',
 ])
 
-const JAPAN_REGION = {
+export const JAPAN_REGION = {
   type: 'Feature',
   properties: {},
   geometry: {

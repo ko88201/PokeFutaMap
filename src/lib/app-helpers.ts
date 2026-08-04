@@ -11,7 +11,7 @@ export function getInitialQueryState(): QueryState {
   const params = new URLSearchParams(window.location.search)
 
   return {
-    area: params.get('area') ?? '',
+    area: normalizeArea(params.get('area') ?? ''),
     accessScores: parseAccessScores(params),
     newOnly: params.get('new') === '1',
     pokemon: params.get('pokemon') ?? '',
@@ -30,7 +30,7 @@ export function queryStateToSearchParams(
   const params = new URLSearchParams()
 
   if (query.pref) params.set('pref', query.pref)
-  if (query.area) params.set('area', query.area)
+  if (query.area) params.set('area', normalizeArea(query.area))
   if (query.pokemon) params.set('pokemon', query.pokemon)
   if (query.accessScores.length > 0) {
     params.set('scores', sortAccessScores(query.accessScores).join(','))
@@ -47,7 +47,7 @@ export function updateLocationSearch(params: URLSearchParams) {
 }
 
 export function areaLabel(area: string) {
-  switch (area) {
+  switch (normalizeArea(area)) {
     case 'hokkaido':
       return '北海道'
     case 'tohoku':
@@ -64,8 +64,6 @@ export function areaLabel(area: string) {
       return '四国'
     case 'kyushu':
       return '九州'
-    case 'okinawa':
-      return '沖縄'
     default:
       return area
   }
@@ -110,4 +108,8 @@ function isAccessibilityScore(value: number): value is AccessibilityScore {
 
 function sortAccessScores(scores: AccessibilityScore[]) {
   return [...new Set(scores)].sort((left, right) => left - right)
+}
+
+function normalizeArea(area: string) {
+  return area === 'okinawa' ? 'kyushu' : area
 }

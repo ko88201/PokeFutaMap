@@ -46,7 +46,6 @@ const AREA_OPTIONS = [
   'chugoku',
   'shikoku',
   'kyushu',
-  'okinawa',
 ] as const
 
 const DEFAULT_QUERY: QueryState = {
@@ -80,6 +79,7 @@ function App() {
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null)
   const [resetSignal, setResetSignal] = useState(0)
   const [locateSignal, setLocateSignal] = useState(0)
+  const [showPrefectureOverlay, setShowPrefectureOverlay] = useState(false)
   const hasTriedInitialNearbyRef = useRef(false)
 
   useEffect(() => {
@@ -365,6 +365,7 @@ function App() {
           activeLid ? <MapPopupCard distanceKm={activeDistanceKm} lid={activeLid} /> : null
         }
         resetSignal={resetSignal}
+        showPrefectureOverlay={showPrefectureOverlay}
         userLocation={nearbyMode ? userLocation : null}
         visibleLids={visibleLids}
       />
@@ -390,6 +391,14 @@ function App() {
             onClick={handleNearbyToggle}
           >
             {nearbyMode ? '近く順を解除' : '現在地'}
+          </ControlButton>
+          <ControlButton
+            active={showPrefectureOverlay}
+            ariaPressed={showPrefectureOverlay}
+            icon={<PrefectureBoundaryIcon />}
+            onClick={() => setShowPrefectureOverlay((visible) => !visible)}
+          >
+            都道府県界
           </ControlButton>
           {!PUBLIC_LITE_MODE ? (
             <ControlButton icon={<CompassIcon />} onClick={handleResetView}>
@@ -877,6 +886,26 @@ function LocateIcon() {
     <svg fill="none" viewBox="0 0 24 24">
       <path
         d="M12 3v3m0 12v3m9-9h-3M6 12H3m14.2 0A5.2 5.2 0 1 1 12 6.8a5.2 5.2 0 0 1 5.2 5.2Z"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  )
+}
+
+function PrefectureBoundaryIcon() {
+  return (
+    <svg fill="none" viewBox="0 0 24 24">
+      <path
+        d="M5 5.8 10.8 4l4.2 2 4-1.2v13.4L13.2 20 9 18l-4 1.2V5.8Z"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+      <path
+        d="M10.8 4v14M15 6v14M5 12.2l5.8-1.8L15 12l4-1.2"
         stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
